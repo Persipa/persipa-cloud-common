@@ -10,10 +10,10 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public abstract class PersipaBaseException extends RuntimeException{
 
-    private int code;
+    protected int code;
 
-    private String msg;
+    protected String msg;
 
-    private String description;
+    protected String description;
 
 }
