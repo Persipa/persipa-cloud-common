@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import site.persipa.cloud.enums.ResultCodeEnum;
+import site.persipa.cloud.exception.PersipaBaseException;
 
 /**
  * @author persipa
@@ -30,6 +31,13 @@ public class Result<T> {
 
     public static Result<Void> fail(ResultCodeEnum resultCodeEnum) {
         return Result.resultWithoutData(resultCodeEnum);
+    }
+
+    public static Result<String> exception(PersipaBaseException exception) {
+        if (exception == null) {
+            return Result.resultWithData(ResultCodeEnum.ERROR, "unknown exception");
+        }
+        return new Result<>(exception.getCode(), exception.getMsg(), exception.getDescription());
     }
 
     private static Result<Void> resultWithoutData(ResultCodeEnum resultCodeEnum) {
