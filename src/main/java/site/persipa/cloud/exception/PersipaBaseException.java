@@ -8,7 +8,7 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public abstract class PersipaBaseException extends RuntimeException{
+public abstract class PersipaBaseException extends Exception{
 
     protected int code;
 
