@@ -9,7 +9,7 @@ public enum ResultCodeEnum {
 
     SUCCESS(200, "success"),
 
-    REFUSE(403, "refuse"),
+    REFUSE(400, "refuse"),
 
     ERROR(500, "error"),
 

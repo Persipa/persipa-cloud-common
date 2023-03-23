@@ -33,6 +33,10 @@ public class Result<T> {
         return Result.resultWithoutData(resultCodeEnum);
     }
 
+    public static <T> Result<T> fail(ResultCodeEnum resultCodeEnum, T data) {
+        return Result.resultWithData(resultCodeEnum, data);
+    }
+
     public static Result<String> exception(PersipaBaseException exception) {
         if (exception == null) {
             return Result.resultWithData(ResultCodeEnum.ERROR, "unknown exception");
