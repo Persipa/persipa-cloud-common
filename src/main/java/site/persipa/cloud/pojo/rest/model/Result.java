@@ -1,4 +1,4 @@
-package site.persipa.cloud.pojo.model;
+package site.persipa.cloud.pojo.rest.model;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
