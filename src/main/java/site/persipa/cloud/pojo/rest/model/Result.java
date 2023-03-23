@@ -20,7 +20,7 @@ public class Result<T> {
 
     private String message;
 
-    private T data;
+    private T payload;
 
     private final long timestamp = System.currentTimeMillis();
 
@@ -28,35 +28,35 @@ public class Result<T> {
         return Result.result(ResultLevelEnum.INFO, null, null);
     }
 
-    public static <T> Result<T> success(T data) {
-        return Result.result(ResultLevelEnum.INFO, null, data);
+    public static <T> Result<T> success(T payload) {
+        return Result.result(ResultLevelEnum.INFO, null, payload);
     }
 
     public static Result<Void> warn() {
         return Result.result(ResultLevelEnum.WARNING, null, null);
     }
 
-    public static <T> Result<T> warn(String message, T data) {
-        return Result.result(ResultLevelEnum.WARNING, message, data);
+    public static <T> Result<T> warn(String message, T payload) {
+        return Result.result(ResultLevelEnum.WARNING, message, payload);
     }
 
     public static Result<Void> fail() {
         return Result.result(ResultLevelEnum.EXCEPTION, null, null);
     }
 
-    public static <T> Result<T> fail(String message, T data) {
-        return Result.result(ResultLevelEnum.EXCEPTION, message, data);
+    public static <T> Result<T> fail(String message, T payload) {
+        return Result.result(ResultLevelEnum.EXCEPTION, message, payload);
     }
 
-    public static <T> Result<T> error() {
+    public static Result<Void> error() {
         return Result.result(ResultLevelEnum.ERROR, null, null);
     }
 
-    private static <T> Result<T> result(ResultLevelEnum resultLevelEnum, String message, T data) {
+    private static <T> Result<T> result(ResultLevelEnum resultLevelEnum, String message, T payload) {
         if (message == null || message.isBlank()) {
             message = resultLevelEnum.getDefaultMsg();
         }
-        return new Result<>(resultLevelEnum.getCode(), resultLevelEnum.getLevel(), message, data);
+        return new Result<>(resultLevelEnum.getCode(), resultLevelEnum.getLevel(), message, payload);
     }
 
 }
