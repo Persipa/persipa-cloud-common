@@ -4,8 +4,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import site.persipa.cloud.enums.ResultCodeEnum;
-import site.persipa.cloud.exception.PersipaBaseException;
+import site.persipa.cloud.enums.ResultLevelEnum;
 
 /**
  * @author persipa
@@ -17,38 +16,47 @@ public class Result<T> {
 
     private int code;
 
+    private String level;
+
     private String message;
 
     private T data;
 
+    private final long timestamp = System.currentTimeMillis();
+
     public static Result<Void> success() {
-        return Result.resultWithoutData(ResultCodeEnum.SUCCESS);
+        return Result.result(ResultLevelEnum.INFO, null, null);
     }
 
     public static <T> Result<T> success(T data) {
-        return Result.resultWithData(ResultCodeEnum.SUCCESS, data);
+        return Result.result(ResultLevelEnum.INFO, null, data);
     }
 
-    public static Result<Void> fail(ResultCodeEnum resultCodeEnum) {
-        return Result.resultWithoutData(resultCodeEnum);
+    public static Result<Void> warn() {
+        return Result.result(ResultLevelEnum.WARNING, null, null);
     }
 
-    public static <T> Result<T> fail(ResultCodeEnum resultCodeEnum, T data) {
-        return Result.resultWithData(resultCodeEnum, data);
+    public static <T> Result<T> warn(String message, T data) {
+        return Result.result(ResultLevelEnum.WARNING, message, data);
     }
 
-    public static Result<String> exception(PersipaBaseException exception) {
-        if (exception == null) {
-            return Result.resultWithData(ResultCodeEnum.ERROR, "unknown exception");
+    public static Result<Void> fail() {
+        return Result.result(ResultLevelEnum.EXCEPTION, null, null);
+    }
+
+    public static <T> Result<T> fail(String message, T data) {
+        return Result.result(ResultLevelEnum.EXCEPTION, message, data);
+    }
+
+    public static <T> Result<T> error() {
+        return Result.result(ResultLevelEnum.ERROR, null, null);
+    }
+
+    private static <T> Result<T> result(ResultLevelEnum resultLevelEnum, String message, T data) {
+        if (message == null || message.isBlank()) {
+            message = resultLevelEnum.getDefaultMsg();
         }
-        return new Result<>(exception.getCode(), exception.getMsg(), exception.getDescription());
+        return new Result<>(resultLevelEnum.getCode(), resultLevelEnum.getLevel(), message, data);
     }
 
-    private static Result<Void> resultWithoutData(ResultCodeEnum resultCodeEnum) {
-        return new Result<>(resultCodeEnum.getCode(), resultCodeEnum.getMessage(), null);
-    }
-
-    private static <T> Result<T> resultWithData(ResultCodeEnum resultCodeEnum, T data) {
-        return new Result<>(resultCodeEnum.getCode(), resultCodeEnum.getMessage(), data);
-    }
 }
