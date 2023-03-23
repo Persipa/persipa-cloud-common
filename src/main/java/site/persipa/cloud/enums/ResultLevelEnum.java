@@ -12,9 +12,9 @@ public enum ResultLevelEnum {
 
     INFO(0, "info", "success"),
 
-    WARNING(2, "warning", "warning"),
+    WARNING(3, "warning", "warning"),
 
-    EXCEPTION(7, "exception", "request error"),
+    EXCEPTION(6, "exception", "request error"),
 
     ERROR(9, "error", "server error"),
 

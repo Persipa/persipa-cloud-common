@@ -4,7 +4,9 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import site.persipa.cloud.enums.ExceptionLevelEnum;
 import site.persipa.cloud.enums.ResultLevelEnum;
+import site.persipa.cloud.exception.PersipaBaseException;
 
 /**
  * @author persipa
@@ -25,15 +27,28 @@ public class Result<T> {
     private final long timestamp = System.currentTimeMillis();
 
     public static Result<Void> success() {
-        return Result.result(ResultLevelEnum.INFO, null, null);
+        return Result.success(null);
     }
 
     public static <T> Result<T> success(T payload) {
         return Result.result(ResultLevelEnum.INFO, null, payload);
     }
 
+    public static <T> Result<T> exception(PersipaBaseException exception) {
+        return Result.exception(exception, null, null);
+    }
+
+    public static <T> Result<T> exception(PersipaBaseException exception, String message, T payload) {
+        ExceptionLevelEnum exceptionLevel = exception.getLevel();
+        ResultLevelEnum resultLevel = exceptionLevel.getResultLevel();
+        if (resultLevel == null) {
+            resultLevel = ResultLevelEnum.ERROR;
+        }
+        return Result.result(resultLevel, message, payload);
+    }
+
     public static Result<Void> warn() {
-        return Result.result(ResultLevelEnum.WARNING, null, null);
+        return Result.warn(null, null);
     }
 
     public static <T> Result<T> warn(String message, T payload) {
@@ -41,7 +56,7 @@ public class Result<T> {
     }
 
     public static Result<Void> fail() {
-        return Result.result(ResultLevelEnum.EXCEPTION, null, null);
+        return Result.fail(null, null);
     }
 
     public static <T> Result<T> fail(String message, T payload) {

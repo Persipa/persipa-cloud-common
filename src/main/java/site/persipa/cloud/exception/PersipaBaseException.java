@@ -2,6 +2,7 @@ package site.persipa.cloud.exception;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import site.persipa.cloud.enums.ExceptionLevelEnum;
 
 /**
  * @author persipa
@@ -15,5 +16,7 @@ public abstract class PersipaBaseException extends Exception{
     protected String msg;
 
     protected String description;
+
+    protected ExceptionLevelEnum level;
 
 }
