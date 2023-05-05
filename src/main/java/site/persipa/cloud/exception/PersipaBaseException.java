@@ -1,7 +1,9 @@
 package site.persipa.cloud.exception;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import site.persipa.cloud.enums.ExceptionLevelEnum;
 
 /**
@@ -9,6 +11,8 @@ import site.persipa.cloud.enums.ExceptionLevelEnum;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
+@AllArgsConstructor
 public abstract class PersipaBaseException extends Exception {
 
     protected int code;
