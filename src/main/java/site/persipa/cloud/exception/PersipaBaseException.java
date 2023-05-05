@@ -9,7 +9,7 @@ import site.persipa.cloud.enums.ExceptionLevelEnum;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public abstract class PersipaBaseException extends Exception{
+public abstract class PersipaBaseException extends Exception {
 
     protected int code;
 
@@ -18,5 +18,11 @@ public abstract class PersipaBaseException extends Exception{
     protected String description;
 
     protected ExceptionLevelEnum level;
+
+    protected PersipaBaseException(PersipaBaseExceptionEnum baseExceptionEnum) {
+        this.code = baseExceptionEnum.getCode();
+        this.msg = baseExceptionEnum.getMsg();
+        this.level = baseExceptionEnum.getLevel();
+    }
 
 }
