@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import site.persipa.cloud.enums.ExceptionLevelEnum;
 import site.persipa.cloud.enums.ResultLevelEnum;
-import site.persipa.cloud.exception.PersipaBaseException;
+import site.persipa.cloud.exception.PersipaException;
 
 /**
  * @author persipa
@@ -34,11 +34,11 @@ public class Result<T> {
         return Result.result(ResultLevelEnum.INFO, null, payload);
     }
 
-    public static <T> Result<T> exception(PersipaBaseException exception) {
+    public static <T> Result<T> exception(PersipaException exception) {
         return Result.exception(exception, null, null);
     }
 
-    public static <T> Result<T> exception(PersipaBaseException exception, String message, T payload) {
+    public static <T> Result<T> exception(PersipaException exception, String message, T payload) {
         ExceptionLevelEnum exceptionLevel = exception.getLevel();
         ResultLevelEnum resultLevel = exceptionLevel.getResultLevel();
         if (resultLevel == null) {

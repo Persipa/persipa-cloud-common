@@ -5,7 +5,7 @@ import site.persipa.cloud.enums.ExceptionLevelEnum;
 /**
  * @author persipa
  */
-public interface PersipaBaseExceptionEnum {
+public interface PersipaException {
 
     int getCode();
 

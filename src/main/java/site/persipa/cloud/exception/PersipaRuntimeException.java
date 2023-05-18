@@ -13,7 +13,7 @@ import site.persipa.cloud.enums.ExceptionLevelEnum;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public abstract class PersipaRuntimeException extends RuntimeException {
+public abstract class PersipaRuntimeException extends RuntimeException implements PersipaException{
 
     protected int code;
 
@@ -23,7 +23,7 @@ public abstract class PersipaRuntimeException extends RuntimeException {
 
     protected ExceptionLevelEnum level;
 
-    protected PersipaRuntimeException(PersipaBaseExceptionEnum baseExceptionEnum) {
+    protected PersipaRuntimeException(PersipaException baseExceptionEnum) {
         this.code = baseExceptionEnum.getCode();
         this.msg = baseExceptionEnum.getMsg();
         this.level = baseExceptionEnum.getLevel();
