@@ -14,7 +14,7 @@ import site.persipa.cloud.enums.PersipaExceptionDef;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class PersipaRuntimeException extends RuntimeException implements PersipaBaseException {
+public class PersipaCustomException extends Exception implements PersipaBaseException {
 
     protected int code;
 
@@ -24,14 +24,15 @@ public class PersipaRuntimeException extends RuntimeException implements Persipa
 
     protected ExceptionLevelEnum level;
 
-    public PersipaRuntimeException(PersipaExceptionDef exception) {
-        this.code = exception.getCode();
-        this.msg = exception.getMsg();
-        this.level = exception.getLevel();
+    public PersipaCustomException(PersipaExceptionDef baseExceptionEnum) {
+        this.code = baseExceptionEnum.getCode();
+        this.msg = baseExceptionEnum.getMsg();
+        this.level = baseExceptionEnum.getLevel();
     }
 
-    public PersipaRuntimeException(PersipaExceptionDef exception, String description) {
+    public PersipaCustomException(PersipaExceptionDef exception, String description) {
         this(exception);
         this.description = description;
     }
+
 }
