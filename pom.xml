@@ -1,0 +1,16 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>site.persipa</groupId>
+    <artifactId>persipa-cloud-dependencies</artifactId>
+    <version>1.0.4</version>
+  </parent>
+
+  <artifactId>persipa-cloud-common</artifactId>
+  <version>1.0.0</version>
+  <name>persipa-cloud-common</name>
+
+
+</project>
