@@ -1,6 +1,6 @@
-package site.persipa.common.exception;
+package site.persipa.cloud.exception;
 
-import site.persipa.common.enums.ExceptionLevelEnum;
+import site.persipa.cloud.enums.ExceptionLevelEnum;
 
 public interface PersipaBaseException {
 

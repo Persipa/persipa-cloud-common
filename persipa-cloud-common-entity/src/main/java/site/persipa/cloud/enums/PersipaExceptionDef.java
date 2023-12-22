@@ -1,4 +1,4 @@
-package site.persipa.common.enums;
+package site.persipa.cloud.enums;
 
 /**
  * @author persipa
