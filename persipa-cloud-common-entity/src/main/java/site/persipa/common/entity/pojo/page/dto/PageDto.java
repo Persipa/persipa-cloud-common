@@ -1,4 +1,4 @@
-package site.persipa.cloud.pojo.page.dto;
+package site.persipa.common.entity.pojo.page.dto;
 
 import lombok.Data;
 

@@ -1,11 +1,11 @@
-package site.persipa.cloud.exception;
+package site.persipa.common.entity.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import site.persipa.cloud.enums.ExceptionLevelEnum;
-import site.persipa.cloud.enums.PersipaExceptionDef;
+import site.persipa.common.entity.enums.ExceptionLevelEnum;
+import site.persipa.common.entity.enums.PersipaExceptionDef;
 
 /**
  * @author persipa

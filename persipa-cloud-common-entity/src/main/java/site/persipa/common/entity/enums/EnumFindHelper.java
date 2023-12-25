@@ -1,4 +1,4 @@
-package site.persipa.cloud.helper.enums;
+package site.persipa.common.entity.enums;
 
 import java.util.EnumSet;
 import java.util.HashMap;

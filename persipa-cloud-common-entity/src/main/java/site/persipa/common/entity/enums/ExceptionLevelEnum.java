@@ -1,4 +1,4 @@
-package site.persipa.cloud.enums;
+package site.persipa.common.entity.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

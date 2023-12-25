@@ -1,12 +1,12 @@
-package site.persipa.cloud.pojo.rest.model;
+package site.persipa.common.entity.pojo.rest.model;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import site.persipa.cloud.enums.ExceptionLevelEnum;
-import site.persipa.cloud.enums.ResultLevelEnum;
-import site.persipa.cloud.exception.PersipaBaseException;
+import site.persipa.common.entity.enums.ExceptionLevelEnum;
+import site.persipa.common.entity.enums.ResultLevelEnum;
+import site.persipa.common.entity.exception.PersipaBaseException;
 
 /**
  * @author persipa
