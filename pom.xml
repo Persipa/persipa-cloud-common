@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>persipa-cloud-common</artifactId>
-    <version>1.1.0</version>
+    <version>2.0.0</version>
     <name>persipa-cloud-common</name>
     <packaging>pom</packaging>
 
@@ -17,6 +17,26 @@
         <module>persipa-cloud-common-entity</module>
         <module>persipa-cloud-common-core</module>
     </modules>
+
+    <properties>
+        <common.core.version>2.0.0</common.core.version>
+        <common.entity.version>2.0.0</common.entity.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>site.persipa</groupId>
+                <artifactId>persipa-cloud-common-core</artifactId>
+                <version>${common.core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>site.persipa</groupId>
+                <artifactId>persipa-cloud-common-entity</artifactId>
+                <version>${common.entity.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
 
 </project>
