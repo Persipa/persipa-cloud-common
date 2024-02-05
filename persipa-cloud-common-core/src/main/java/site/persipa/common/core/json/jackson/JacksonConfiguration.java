@@ -14,7 +14,7 @@ import java.time.format.DateTimeFormatter;
  */
 public class JacksonConfiguration {
 
-    private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
+    private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Bean
     @ConditionalOnProperty(prefix = "persipa.cloud.json.jackson", name = "java-time-module",
