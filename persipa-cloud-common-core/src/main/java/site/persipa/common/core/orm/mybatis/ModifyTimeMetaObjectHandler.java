@@ -2,17 +2,12 @@ package site.persipa.common.core.orm.mybatis;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import org.apache.ibatis.reflection.MetaObject;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 import java.time.LocalDateTime;
 
 /**
  * @author persipa
  */
-@AutoConfiguration
-@ConditionalOnProperty(prefix = "persipa.cloud.orm.mybatis", name = "auto-fill-time",
-        havingValue = "true", matchIfMissing = true)
 public class ModifyTimeMetaObjectHandler implements MetaObjectHandler {
     @Override
     public void insertFill(MetaObject metaObject) {
