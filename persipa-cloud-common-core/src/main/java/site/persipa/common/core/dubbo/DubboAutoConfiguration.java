@@ -10,12 +10,12 @@ import org.springframework.context.annotation.Configuration;
  * @author persipa
  */
 @AutoConfiguration
-@ConditionalOnClass(name = "org.apache.dubbo.config.spring.context.annotation.EnableDubbo")
-@ConditionalOnProperty(prefix = "persipa.cloud.dubbo", name = "enabled", matchIfMissing = true)
 public class DubboAutoConfiguration {
 
-    @Configuration
+    @ConditionalOnClass(name = "org.apache.dubbo.config.spring.context.annotation.EnableDubbo")
+    @ConditionalOnProperty(prefix = "persipa.cloud.dubbo", name = "enabled", matchIfMissing = true)
     @EnableDubbo
+    @Configuration
     static class DubboConfiguration {
     }
 }
