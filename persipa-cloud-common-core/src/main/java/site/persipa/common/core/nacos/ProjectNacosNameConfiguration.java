@@ -1,6 +1,7 @@
 package site.persipa.common.core.nacos;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Configuration;
@@ -10,7 +11,7 @@ import org.springframework.util.StringUtils;
 /**
  * @author persipa
  */
-@Configuration
+@AutoConfiguration
 @ConditionalOnProperty(prefix = "persipa.cloud.auto-project-name",name = "enabled",matchIfMissing = true)
 public class ProjectNacosNameConfiguration implements EnvironmentAware {
 
