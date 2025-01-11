@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
  * @author persipa
  */
 @Configuration
-@ConditionalOnProperty(prefix = "persipa.cloud.nacos.descovery", name = "enabled", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "persipa.cloud.nacos.discovery", name = "enabled", matchIfMissing = true)
 @EnableDiscoveryClient
 @RefreshScope
 public class NacosConfiguration {

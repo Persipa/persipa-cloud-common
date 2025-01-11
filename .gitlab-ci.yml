@@ -1,0 +1,15 @@
+stages:
+  - deploy_maven
+
+cache:
+  paths:
+    - .m2/repository
+
+deploy_maven:
+  stage: deploy_maven
+  image: '$MAVEN_IMAGE'
+  script:
+    - "mvn -D skipTests=true clean deploy"
+  artifacts:
+    paths:
+      - '*/target/*.jar'
