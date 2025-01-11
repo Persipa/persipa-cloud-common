@@ -10,13 +10,15 @@ import org.springframework.context.annotation.Configuration;
  * @author persipa
  */
 @AutoConfiguration
-@ConditionalOnProperty(prefix = "persipa.cloud.nacos.discovery", name = "enabled", matchIfMissing = true)
 public class NacosAutoConfiguration {
 
     @Configuration
+    @ConditionalOnProperty(prefix = "persipa.cloud.nacos.discovery", name = "enabled", matchIfMissing = true)
     @EnableDiscoveryClient
     @RefreshScope
     static class NacosConfiguration {
 
     }
 }
+
+
