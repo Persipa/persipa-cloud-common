@@ -1,1 +1,4 @@
 site.persipa.common.core.orm.mybatis.CustomMybatisPlusAutoConfiguration
+site.persipa.common.core.dubbo.DubboAutoConfiguration
+site.persipa.common.core.nacos.NacosAutoConfiguration
+site.persipa.common.core.nacos.ProjectNacosNameConfiguration

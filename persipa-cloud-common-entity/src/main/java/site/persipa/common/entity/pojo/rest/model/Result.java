@@ -4,9 +4,8 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import site.persipa.common.entity.enums.ExceptionLevelEnum;
-import site.persipa.common.entity.enums.ResultLevelEnum;
-import site.persipa.common.entity.exception.PersipaBaseException;
+import site.persipa.common.entity.exception.BaseException;
+import site.persipa.common.entity.exception.DefaultSimpleException;
 
 /**
  * @author persipa
@@ -17,8 +16,6 @@ import site.persipa.common.entity.exception.PersipaBaseException;
 public class Result<T> {
 
     private int code;
-
-    private String level;
 
     private String message;
 
@@ -31,31 +28,19 @@ public class Result<T> {
     }
 
     public static <T> Result<T> success(T payload) {
-        return Result.result(ResultLevelEnum.INFO, null, payload);
-    }
-
-    public static <T> Result<T> exception(PersipaBaseException exception) {
-        return Result.exception(exception, null, null);
-    }
-
-    public static <T> Result<T> exception(PersipaBaseException exception, String message, T payload) {
-        ExceptionLevelEnum exceptionLevel = exception.getLevel();
-        ResultLevelEnum resultLevel = exceptionLevel.getResultLevel();
-        if (resultLevel == null) {
-            resultLevel = ResultLevelEnum.ERROR;
-        }
-        return Result.result(resultLevel, message, payload);
+        return new Result<>(0, "Success", payload);
     }
 
     public static Result<Void> fail() {
-        return Result.result(ResultLevelEnum.ERROR, null, null);
+        return Result.fail(DefaultSimpleException.create());
     }
 
-    private static <T> Result<T> result(ResultLevelEnum resultLevelEnum, String message, T payload) {
-        if (message == null || message.isBlank()) {
-            message = resultLevelEnum.getDefaultMsg();
-        }
-        return new Result<>(resultLevelEnum.getCode(), resultLevelEnum.getLevel(), message, payload);
+    public static Result<Void> fail(BaseException exception) {
+        return Result.fail(exception, null);
+    }
+
+    public static <T> Result<T> fail(BaseException exception, T payload) {
+        return new Result<>(exception.getCode(), exception.getMessage(), payload);
     }
 
 }
