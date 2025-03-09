@@ -4,8 +4,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import site.persipa.common.entity.exception.BaseException;
-import site.persipa.common.entity.exception.DefaultSimpleException;
 
 /**
  * @author persipa
@@ -32,15 +30,11 @@ public class Result<T> {
     }
 
     public static Result<Void> fail() {
-        return Result.fail(DefaultSimpleException.create());
+        return Result.fail(null);
     }
 
-    public static Result<Void> fail(BaseException exception) {
-        return Result.fail(exception, null);
-    }
-
-    public static <T> Result<T> fail(BaseException exception, T payload) {
-        return new Result<>(exception.getCode(), exception.getMessage(), payload);
+    public static <T> Result<T> fail(T payload) {
+        return new Result<>(-1, "Fail", payload);
     }
 
 }

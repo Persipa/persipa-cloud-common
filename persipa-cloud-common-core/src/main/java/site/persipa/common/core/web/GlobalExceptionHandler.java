@@ -1,10 +1,9 @@
 package site.persipa.common.core.web;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import site.persipa.common.entity.exception.BaseException;
-import site.persipa.common.entity.exception.DefaultSimpleException;
-import site.persipa.common.entity.pojo.rest.model.Result;
 
 /**
  * 全局异常捕获
@@ -12,14 +11,14 @@ import site.persipa.common.entity.pojo.rest.model.Result;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(BaseException.class)
-    protected <T> Result<T> exception(BaseException exception, T data) {
-        return Result.fail(exception, data);
+    @ExceptionHandler(BaseWebException.class)
+    protected ProblemDetail handleBaseWebException(BaseWebException exception) {
+        return exception.toProblemDetail();
     }
 
     @ExceptionHandler(Exception.class)
-    public <T> Result<T> exception(Exception exception, T data) {
-        return Result.fail(DefaultSimpleException.create(exception.getMessage()), data);
+    public ProblemDetail exception(Exception exception) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage());
     }
 
 }
