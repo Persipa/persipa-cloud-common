@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(BaseWebException.class)
-    protected ProblemDetail handleBaseWebException(BaseWebException exception) {
+    public ProblemDetail handleBaseWebException(BaseWebException exception) {
         return exception.toProblemDetail();
     }
 
