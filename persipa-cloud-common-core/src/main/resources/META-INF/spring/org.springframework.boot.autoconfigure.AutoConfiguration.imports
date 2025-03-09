@@ -1,4 +1,5 @@
-site.persipa.common.core.orm.mybatis.CustomMybatisPlusAutoConfiguration
 site.persipa.common.core.dubbo.DubboAutoConfiguration
 site.persipa.common.core.nacos.NacosDiscoveryAutoConfiguration
 site.persipa.common.core.nacos.ProjectNacosNameConfiguration
+site.persipa.common.core.orm.mybatis.CustomMybatisPlusAutoConfiguration
+site.persipa.common.core.web.GlobalExceptionHandler
