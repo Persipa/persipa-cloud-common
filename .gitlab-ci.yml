@@ -1,15 +1,20 @@
 stages:
-  - deploy_maven
+  - deploy
+
+variables:
+  MAVEN_CLI_OPTS: "-B -e -V -DskipTests -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
 
 cache:
+  key: maven
   paths:
     - .m2/repository
 
-deploy_maven:
-  stage: deploy_maven
-  image: '$MAVEN_IMAGE'
+build:
+  stage: deploy
+  tags:
+    - maven-deploy
+  image: persipa/gitlab-runner-maven:3.9.9-eclipse-temurin-17
   script:
-    - "mvn -D skipTests=true clean deploy"
-  artifacts:
-    paths:
-      - '*/target/*.jar'
+    - mvn $MAVEN_CLI_OPTS clean deploy
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH

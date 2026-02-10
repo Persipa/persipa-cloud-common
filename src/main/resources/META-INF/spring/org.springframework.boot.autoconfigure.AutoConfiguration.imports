@@ -1,0 +1,2 @@
+site.persipa.common.jackson.JacksonConfiguration
+site.persipa.common.mybatis.CustomMybatisPlusAutoConfiguration
