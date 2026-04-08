@@ -3,6 +3,8 @@ package site.persipa.common.mybatis;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import org.apache.ibatis.reflection.MetaObject;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 
@@ -12,11 +14,16 @@ import java.time.LocalDateTime;
  * @author persipa
  */
 @AutoConfiguration
+@ConditionalOnClass(MetaObjectHandler.class)
 public class CustomMybatisPlusAutoConfiguration {
 
+    /**
+     * 创建默认字段填充处理器，自动维护 createTime 和 updateTime。
+     */
     @Bean
+    @ConditionalOnMissingBean(MetaObjectHandler.class)
     @ConditionalOnProperty(prefix = "persipa.cloud.orm.mybatis", name = "auto-fill-time",
-            havingValue = "true", matchIfMissing = true)
+            havingValue = "true", matchIfMissing = false)
     public MetaObjectHandler modifyTimeMetaObjectHandler() {
         return new MetaObjectHandler() {
             @Override

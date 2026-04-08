@@ -1,2 +1,3 @@
 site.persipa.common.jackson.JacksonConfiguration
 site.persipa.common.mybatis.CustomMybatisPlusAutoConfiguration
+site.persipa.common.openapi.SpringDocAutoConfiguration
