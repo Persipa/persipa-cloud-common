@@ -40,6 +40,11 @@ persipa:
       description: Internal API docs
       version: v1
       terms-of-service: https://example.com/tos
+      servers:
+        - url: https://api.example.com
+          description: Production
+        - url: https://staging-api.example.com
+          description: Staging
 ```
 
 说明：
@@ -71,4 +76,3 @@ return Result.fail("参数错误");
 
 - Jackson、MyBatis、OpenAPI 配置都使用 `@ConditionalOnMissingBean`，支持下游按需覆盖。
 - MyBatis 与 OpenAPI 相关依赖在 `pom.xml` 中为 `optional`，避免无关服务被强耦合。
-

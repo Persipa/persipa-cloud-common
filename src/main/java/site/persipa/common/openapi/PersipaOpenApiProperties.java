@@ -3,6 +3,9 @@ package site.persipa.common.openapi;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author persipa
  */
@@ -29,5 +32,25 @@ public class PersipaOpenApiProperties {
      * 服务条款地址。
      */
     private String termsOfService = "";
+
+    /**
+     * OpenAPI server 列表。
+     */
+    private List<ServerProperties> servers = new ArrayList<>();
+
+    @Data
+    public static class ServerProperties {
+
+        /**
+         * server 地址。
+         */
+        private String url;
+
+        /**
+         * server 描述。
+         */
+        private String description = "";
+
+    }
 
 }

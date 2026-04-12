@@ -2,13 +2,17 @@ package site.persipa.common.openapi;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+
+import java.util.List;
 
 /**
  * @author persipa
@@ -38,6 +42,24 @@ public class SpringDocAutoConfiguration {
             info.setTermsOfService(properties.getTermsOfService());
         }
 
-        return new OpenAPI().info(info);
+        OpenAPI openAPI = new OpenAPI().info(info);
+        if (!CollectionUtils.isEmpty(properties.getServers())) {
+            List<Server> servers = properties.getServers().stream()
+                    .filter(serverProperties -> StringUtils.hasText(serverProperties.getUrl()))
+                    .map(serverProperties -> {
+                        Server server = new Server().url(serverProperties.getUrl());
+                        if (StringUtils.hasText(serverProperties.getDescription())) {
+                            server.setDescription(serverProperties.getDescription());
+                        }
+                        return server;
+                    })
+                    .toList();
+
+            if (!servers.isEmpty()) {
+                openAPI.setServers(servers);
+            }
+        }
+
+        return openAPI;
     }
 }
