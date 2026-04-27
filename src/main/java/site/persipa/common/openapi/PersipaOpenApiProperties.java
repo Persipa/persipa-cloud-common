@@ -14,6 +14,11 @@ import java.util.List;
 public class PersipaOpenApiProperties {
 
     /**
+     * 是否启用 OpenAPI 自动配置。
+     */
+    private boolean enabled = false;
+
+    /**
      * 文档标题。
      */
     private String title = "API Documentation";
