@@ -15,4 +15,8 @@ public class MybatisProperties {
      */
     private boolean autoFillTime = false;
 
+    private String createTimeField = "createTime";
+
+    private String updateTimeField = "updateTime";
+
 }

@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 /**
  * @author persipa
@@ -25,18 +25,17 @@ public class CustomMybatisPlusAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(MetaObjectHandler.class)
     @ConditionalOnProperty(prefix = "persipa.cloud.orm.mybatis", name = "auto-fill-time",
-            havingValue = "true", matchIfMissing = false)
-    public MetaObjectHandler modifyTimeMetaObjectHandler() {
+            havingValue = "true")
+    public MetaObjectHandler modifyTimeMetaObjectHandler(MybatisProperties properties) {
         return new MetaObjectHandler() {
             @Override
             public void insertFill(MetaObject metaObject) {
-                this.strictInsertFill(metaObject, "createTime", LocalDateTime::now, LocalDateTime.class);
-
+                this.strictInsertFill(metaObject, properties.getCreateTimeField(), Instant::now, Instant.class);
             }
 
             @Override
             public void updateFill(MetaObject metaObject) {
-                this.strictUpdateFill(metaObject, "updateTime", LocalDateTime::now, LocalDateTime.class);
+                this.strictUpdateFill(metaObject, properties.getUpdateTimeField(), Instant::now, Instant.class);
             }
         };
     }
