@@ -6,12 +6,13 @@
 - Jackson `LocalDateTime` 序列化/反序列化格式支持
 - MyBatis-Plus 自动填充 `createTime` / `updateTime`
 - Springdoc OpenAPI 通用配置
+- Spring 应用启动后打印应用版本信息
 
 本项目默认遵循“非侵入式”原则：自动配置默认关闭，按需开启。
 
 ## 版本
 
-当前项目版本：`1.0.0`
+当前项目版本：`4.1.0`
 
 ## 依赖引入
 
@@ -19,7 +20,7 @@
 <dependency>
     <groupId>site.persipa</groupId>
     <artifactId>persipa-cloud-common</artifactId>
-    <version>1.0.0</version>
+    <version>4.1.0</version>
 </dependency>
 ```
 
@@ -45,6 +46,8 @@ persipa:
           description: Production
         - url: https://staging-api.example.com
           description: Staging
+    app-version:
+      print: true
 ```
 
 说明：
@@ -55,6 +58,9 @@ persipa:
   启用后自动填充实体字段 `createTime`、`updateTime`。
 - `persipa.cloud.openapi.enabled=true`  
   启用后注册默认 `OpenAPI` Bean；业务方可自定义同类型 Bean 覆盖。
+- `persipa.cloud.app-version.print=true`  
+  启用后在应用启动完成时通过日志打印应用名称与版本。业务应用需要生成 Spring Boot
+  `build-info.properties` 才能打印真实名称和版本；缺失时打印通用启动完成信息。
 
 ## REST 响应模型
 

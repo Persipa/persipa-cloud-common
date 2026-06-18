@@ -1,18 +1,25 @@
 stages:
-  - deploy
+  - deploy_maven
 
 variables:
-  MAVEN_CLI_OPTS: "-B -e -V -DskipTests -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
+  CUSTOM_MAVEN_ARGS: ""
 
 cache:
   key: maven
   paths:
     - .m2/repository
+    - .m2/wrapper/dists
 
-build:
-  stage: deploy
+deploy_maven:
+  stage: deploy_maven
+  image: eclipse-temurin:17-jdk-noble
   tags:
-    - maven-deploy
-  image: persipa/gitlab-runner-maven:3.9.9-eclipse-temurin-17
+    - maven
+  before_script:
+    - mkdir -p $CI_PROJECT_DIR/.m2
+    - cat $FILE_MAVEN_SETTINGS_XML > $CI_PROJECT_DIR/.m2/settings.xml
+    - echo $MAVEN_ARGS
   script:
-    - mvn $MAVEN_CLI_OPTS clean deploy
+    - ./mvnw $MAVEN_ARGS $CUSTOM_MAVEN_ARGS clean deploy
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH

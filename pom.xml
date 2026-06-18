@@ -5,7 +5,7 @@
     <parent>
         <groupId>site.persipa</groupId>
         <artifactId>persipa-spring-parent</artifactId>
-        <version>1.0.2</version>
+        <version>1.0.3</version>
         <relativePath/>
     </parent>
 
@@ -14,7 +14,7 @@
     <name>persipa-cloud-common</name>
 
     <properties>
-        <revision>4.1.0</revision>
+        <revision>4.1.1-SNAPSHOT</revision>
     </properties>
 
     <dependencies>
@@ -42,6 +42,12 @@
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
             <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
