@@ -12,15 +12,15 @@
 
 ## 版本
 
-当前项目版本：`4.1.0`
+当前项目版本：`4.1.1`
 
 ## 依赖引入
 
 ```xml
 <dependency>
-    <groupId>site.persipa</groupId>
+    <grouId>site.persipa</grouId>
     <artifactId>persipa-cloud-common</artifactId>
-    <version>4.1.0</version>
+    <version>4.1.1</version>
 </dependency>
 ```
 
