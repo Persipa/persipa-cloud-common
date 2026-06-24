@@ -31,6 +31,7 @@ public class CustomMybatisPlusAutoConfiguration {
             @Override
             public void insertFill(MetaObject metaObject) {
                 this.strictInsertFill(metaObject, properties.getCreateTimeField(), Instant::now, Instant.class);
+                this.strictInsertFill(metaObject, properties.getUpdateTimeField(), Instant::now, Instant.class);
             }
 
             @Override
