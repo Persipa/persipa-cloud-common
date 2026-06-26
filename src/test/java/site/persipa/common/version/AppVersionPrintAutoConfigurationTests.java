@@ -2,14 +2,16 @@ package site.persipa.common.version;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 
 import java.util.Properties;
 
@@ -27,14 +29,21 @@ class AppVersionPrintAutoConfigurationTests {
             .withConfiguration(AutoConfigurations.of(AppVersionPrintAutoConfiguration.class));
 
     @Test
-    void shouldNotRegisterRunnerByDefault() {
-        contextRunner.run(context -> assertThat(context).doesNotHaveBean(AppVersionPrintRunner.class));
+    void shouldNotRegisterReadyListenerByDefault() {
+        contextRunner.run(context -> assertThat(context).doesNotHaveBean(AppVersionPrintReadyListener.class));
     }
 
     @Test
-    void shouldRegisterRunnerWhenPrintEnabled() {
+    void shouldRegisterReadyListenerWhenPrintEnabled() {
         contextRunner.withPropertyValues("persipa.cloud.app-version.print=true")
-                .run(context -> assertThat(context).hasSingleBean(AppVersionPrintRunner.class));
+                .run(context -> assertThat(context).hasSingleBean(AppVersionPrintReadyListener.class));
+    }
+
+    @Test
+    void shouldRunWithLowestPrecedenceOrder() {
+        contextRunner.withPropertyValues("persipa.cloud.app-version.print=true")
+                .run(context -> assertThat(context.getBean(AppVersionPrintReadyListener.class).getOrder())
+                        .isEqualTo(Ordered.LOWEST_PRECEDENCE));
     }
 
     @Test
@@ -42,7 +51,7 @@ class AppVersionPrintAutoConfigurationTests {
         contextRunner.withPropertyValues("persipa.cloud.app-version.print=true")
                 .withUserConfiguration(BuildPropertiesConfiguration.class)
                 .run(context -> {
-                    context.getBean(AppVersionPrintRunner.class).run(null);
+                    context.getBean(AppVersionPrintReadyListener.class).onApplicationEvent(null);
 
                     assertThat(output).contains(SEPARATOR)
                             .contains("demo-service Started.")
@@ -54,7 +63,7 @@ class AppVersionPrintAutoConfigurationTests {
     void shouldPrintFallbackMessageWhenBuildPropertiesMissing(CapturedOutput output) {
         contextRunner.withPropertyValues("persipa.cloud.app-version.print=true")
                 .run(context -> {
-                    context.getBean(AppVersionPrintRunner.class).run(null);
+                    context.getBean(AppVersionPrintReadyListener.class).onApplicationEvent(null);
 
                     assertThat(output).contains(SEPARATOR)
                             .contains("Spring Application Started.");
@@ -62,23 +71,23 @@ class AppVersionPrintAutoConfigurationTests {
     }
 
     @Test
-    void shouldBackOffWhenCustomRunnerExists() {
+    void shouldBackOffWhenCustomReadyListenerExists() {
         contextRunner.withPropertyValues("persipa.cloud.app-version.print=true")
-                .withUserConfiguration(CustomRunnerConfiguration.class)
+                .withUserConfiguration(CustomReadyListenerConfiguration.class)
                 .run(context -> {
-                    assertThat(context).hasSingleBean(AppVersionPrintRunner.class);
-                    assertThat(context.getBean(AppVersionPrintRunner.class))
-                            .isSameAs(context.getBean("customAppVersionPrintRunner"));
+                    assertThat(context).hasSingleBean(AppVersionPrintReadyListener.class);
+                    assertThat(context.getBean(AppVersionPrintReadyListener.class))
+                            .isSameAs(context.getBean("customAppVersionPrintReadyListener"));
                 });
     }
 
     @Test
-    void shouldBackOffWhenCustomRunnerBeanNameExists() {
+    void shouldBackOffWhenCustomReadyListenerBeanNameExists() {
         contextRunner.withPropertyValues("persipa.cloud.app-version.print=true")
-                .withUserConfiguration(CustomRunnerBeanNameConfiguration.class)
+                .withUserConfiguration(CustomReadyListenerBeanNameConfiguration.class)
                 .run(context -> {
-                    assertThat(context).hasBean("appVersionPrintRunner");
-                    assertThat(context).doesNotHaveBean(AppVersionPrintRunner.class);
+                    assertThat(context).hasBean("appVersionPrintReadyListener");
+                    assertThat(context).doesNotHaveBean(AppVersionPrintReadyListener.class);
                 });
     }
 
@@ -95,24 +104,24 @@ class AppVersionPrintAutoConfigurationTests {
     }
 
     @Configuration(proxyBeanMethods = false)
-    static class CustomRunnerConfiguration {
+    static class CustomReadyListenerConfiguration {
 
         @Bean
-        AppVersionPrintRunner customAppVersionPrintRunner() {
-            return new AppVersionPrintRunner(null) {
+        AppVersionPrintReadyListener customAppVersionPrintReadyListener() {
+            return new AppVersionPrintReadyListener(null) {
                 @Override
-                public void run(org.springframework.boot.ApplicationArguments args) {
+                public void onApplicationEvent(ApplicationReadyEvent event) {
                 }
             };
         }
     }
 
     @Configuration(proxyBeanMethods = false)
-    static class CustomRunnerBeanNameConfiguration {
+    static class CustomReadyListenerBeanNameConfiguration {
 
         @Bean
-        ApplicationRunner appVersionPrintRunner() {
-            return args -> {
+        ApplicationListener<ApplicationReadyEvent> appVersionPrintReadyListener() {
+            return event -> {
             };
         }
     }

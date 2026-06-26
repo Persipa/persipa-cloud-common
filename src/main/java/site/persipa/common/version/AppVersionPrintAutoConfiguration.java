@@ -17,11 +17,12 @@ import org.springframework.context.annotation.Bean;
 public class AppVersionPrintAutoConfiguration {
 
     /**
-     * 创建应用版本信息打印 Runner。
+     * 创建应用版本信息打印监听器。
      */
     @Bean
-    @ConditionalOnMissingBean(value = AppVersionPrintRunner.class, name = "appVersionPrintRunner")
-    public AppVersionPrintRunner appVersionPrintRunner(ObjectProvider<BuildProperties> buildPropertiesProvider) {
-        return new AppVersionPrintRunner(buildPropertiesProvider);
+    @ConditionalOnMissingBean(value = AppVersionPrintReadyListener.class, name = "appVersionPrintReadyListener")
+    public AppVersionPrintReadyListener appVersionPrintReadyListener(
+            ObjectProvider<BuildProperties> buildPropertiesProvider) {
+        return new AppVersionPrintReadyListener(buildPropertiesProvider);
     }
 }

@@ -12,15 +12,15 @@
 
 ## 版本
 
-当前项目版本：`4.1.1`
+当前项目版本：`4.1.3`
 
 ## 依赖引入
 
 ```xml
 <dependency>
-    <grouId>site.persipa</grouId>
+    <groupId>site.persipa</groupId>
     <artifactId>persipa-cloud-common</artifactId>
-    <version>4.1.1</version>
+    <version>4.1.3</version>
 </dependency>
 ```
 
@@ -59,7 +59,7 @@ persipa:
 - `persipa.cloud.openapi.enabled=true`  
   启用后注册默认 `OpenAPI` Bean；业务方可自定义同类型 Bean 覆盖。
 - `persipa.cloud.app-version.print=true`  
-  启用后在应用启动完成时通过日志打印应用名称与版本。业务应用需要生成 Spring Boot
+  启用后在应用 Ready 后通过日志打印应用名称与版本。业务应用需要生成 Spring Boot
   `build-info.properties` 才能打印真实名称和版本；缺失时打印通用启动完成信息。
 
 ## REST 响应模型
