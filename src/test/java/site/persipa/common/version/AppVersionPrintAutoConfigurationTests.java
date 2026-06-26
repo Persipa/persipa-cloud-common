@@ -54,8 +54,9 @@ class AppVersionPrintAutoConfigurationTests {
                     context.getBean(AppVersionPrintReadyListener.class).onApplicationEvent(null);
 
                     assertThat(output).contains(SEPARATOR)
-                            .contains("demo-service Started.")
-                            .contains("Version: 1.2.3");
+                            .contains("Spring Application Started.")
+                            .contains("AppName: \033[32mdemo-service\033[0m")
+                            .contains("Version: \033[32m1.2.3\033[0m");
                 });
     }
 
@@ -66,7 +67,35 @@ class AppVersionPrintAutoConfigurationTests {
                     context.getBean(AppVersionPrintReadyListener.class).onApplicationEvent(null);
 
                     assertThat(output).contains(SEPARATOR)
-                            .contains("Spring Application Started.");
+                            .contains("Spring Application Started.")
+                            .doesNotContain("AppName:")
+                            .doesNotContain("Version:");
+                });
+    }
+
+    @Test
+    void shouldSkipAppNameWhenBuildNameMissing(CapturedOutput output) {
+        contextRunner.withPropertyValues("persipa.cloud.app-version.print=true")
+                .withUserConfiguration(BuildPropertiesWithoutNameConfiguration.class)
+                .run(context -> {
+                    context.getBean(AppVersionPrintReadyListener.class).onApplicationEvent(null);
+
+                    assertThat(output).contains("Spring Application Started.")
+                            .doesNotContain("AppName:")
+                            .contains("Version: \033[32m1.2.3\033[0m");
+                });
+    }
+
+    @Test
+    void shouldSkipVersionWhenBuildVersionMissing(CapturedOutput output) {
+        contextRunner.withPropertyValues("persipa.cloud.app-version.print=true")
+                .withUserConfiguration(BuildPropertiesWithoutVersionConfiguration.class)
+                .run(context -> {
+                    context.getBean(AppVersionPrintReadyListener.class).onApplicationEvent(null);
+
+                    assertThat(output).contains("Spring Application Started.")
+                            .contains("AppName: \033[32mdemo-service\033[0m")
+                            .doesNotContain("Version:");
                 });
     }
 
@@ -96,10 +125,25 @@ class AppVersionPrintAutoConfigurationTests {
 
         @Bean
         BuildProperties buildProperties() {
-            Properties properties = new Properties();
-            properties.setProperty("name", "demo-service");
-            properties.setProperty("version", "1.2.3");
-            return new BuildProperties(properties);
+            return createBuildProperties("demo-service", "1.2.3");
+        }
+    }
+
+    @Configuration(proxyBeanMethods = false)
+    static class BuildPropertiesWithoutNameConfiguration {
+
+        @Bean
+        BuildProperties buildProperties() {
+            return createBuildProperties(null, "1.2.3");
+        }
+    }
+
+    @Configuration(proxyBeanMethods = false)
+    static class BuildPropertiesWithoutVersionConfiguration {
+
+        @Bean
+        BuildProperties buildProperties() {
+            return createBuildProperties("demo-service", null);
         }
     }
 
@@ -124,5 +168,16 @@ class AppVersionPrintAutoConfigurationTests {
             return event -> {
             };
         }
+    }
+
+    private static BuildProperties createBuildProperties(String name, String version) {
+        Properties properties = new Properties();
+        if (name != null) {
+            properties.setProperty("name", name);
+        }
+        if (version != null) {
+            properties.setProperty("version", version);
+        }
+        return new BuildProperties(properties);
     }
 }

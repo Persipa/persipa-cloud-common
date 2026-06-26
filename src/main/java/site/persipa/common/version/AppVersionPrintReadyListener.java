@@ -1,21 +1,22 @@
 package site.persipa.common.version;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
+import org.springframework.util.StringUtils;
 
 /**
  * 在 Spring 应用 Ready 后打印版本信息。
  *
  * @author persipa
  */
-@Slf4j
 public class AppVersionPrintReadyListener implements ApplicationListener<ApplicationReadyEvent>, Ordered {
 
     private static final String SEPARATOR = "------------------------------------------------------------";
+    private static final String GREEN = "\033[32m";
+    private static final String RESET = "\033[0m";
 
     private final ObjectProvider<BuildProperties> buildPropertiesProvider;
 
@@ -25,20 +26,24 @@ public class AppVersionPrintReadyListener implements ApplicationListener<Applica
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
+        StringBuilder message = new StringBuilder()
+                .append(SEPARATOR).append(System.lineSeparator())
+                .append("Spring Application Started.").append(System.lineSeparator());
+
         BuildProperties buildProperties = buildPropertiesProvider.getIfAvailable();
         if (buildProperties != null) {
-            log.info("""
-                    {}
-                    Spring Application {} Started.
-                    Version: {}
-                    {}""", SEPARATOR, buildProperties.getName(), buildProperties.getVersion(), SEPARATOR);
-            return;
+            if (StringUtils.hasText(buildProperties.getName())) {
+                message.append("AppName: ").append(GREEN).append(buildProperties.getName()).append(RESET)
+                        .append(System.lineSeparator());
+            }
+            if (StringUtils.hasText(buildProperties.getVersion())) {
+                message.append("Version: ").append(GREEN).append(buildProperties.getVersion()).append(RESET)
+                        .append(System.lineSeparator());
+            }
         }
 
-        log.info("""
-                {}
-                Spring Application Started.
-                {}""", SEPARATOR, SEPARATOR);
+        message.append(SEPARATOR).append(System.lineSeparator());
+        System.out.print(message);
     }
 
     @Override
