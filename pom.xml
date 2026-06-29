@@ -14,7 +14,7 @@
     <name>persipa-cloud-common</name>
 
     <properties>
-        <revision>4.1.4</revision>
+        <revision>4.2.0-SNAPSHOT</revision>
     </properties>
 
     <dependencies>
@@ -25,6 +25,11 @@
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-spring-boot4-starter</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-jsqlparser</artifactId>
             <optional>true</optional>
         </dependency>
         <dependency>

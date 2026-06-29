@@ -1,6 +1,8 @@
 package site.persipa.common.mybatis;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
+import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import org.apache.ibatis.reflection.MetaObject;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -8,6 +10,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import java.time.Instant;
 
@@ -41,5 +44,32 @@ public class CustomMybatisPlusAutoConfiguration {
         };
     }
 
+    /**
+     * MyBatis-Plus 分页插件自动配置。
+     */
+    @Configuration(proxyBeanMethods = false)
+    @ConditionalOnClass(PaginationInnerInterceptor.class)
+    @ConditionalOnProperty(prefix = "persipa.cloud.orm.mybatis.pagination", name = "enabled",
+            havingValue = "true")
+    static class PaginationConfiguration {
+
+        /**
+         * 注册默认的 MyBatis-Plus 拦截器，并将分页插件加入插件链。
+         */
+        @Bean
+        @ConditionalOnMissingBean(MybatisPlusInterceptor.class)
+        MybatisPlusInterceptor mybatisPlusInterceptor(MybatisProperties properties) {
+            MybatisProperties.Pagination pagination = properties.getPagination();
+            PaginationInnerInterceptor paginationInterceptor = pagination.getDbType() == null
+                    ? new PaginationInnerInterceptor()
+                    : new PaginationInnerInterceptor(pagination.getDbType());
+            paginationInterceptor.setOverflow(pagination.isOverflow());
+            paginationInterceptor.setMaxLimit(pagination.getMaxLimit());
+
+            MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
+            interceptor.addInnerInterceptor(paginationInterceptor);
+            return interceptor;
+        }
+    }
 
 }
