@@ -1,41 +1,111 @@
 # persipa-cloud-common
 
-私有项目可复用的 Spring Boot 公共依赖库，提供以下能力：
+Persipa 项目使用的公共 Java 类库与 Spring Boot 自动配置集合。项目采用 Maven
+多模块结构，让非 Spring 项目只引入轻量公共模型，Spring Boot 项目按需启用自动配置。
 
-- 统一 REST 响应模型 `Result<T>`
-- 与持久层实现解耦的分页响应模型 `PageResponse<T>`
-- Jackson `LocalDateTime` 序列化/反序列化格式支持
-- MyBatis-Plus 自动填充 `createTime` / `updateTime`
-- MyBatis-Plus 分页插件自动配置
-- Springdoc OpenAPI 通用配置
-- Spring 应用启动后打印应用版本信息
+当前版本：`4.2.0-SNAPSHOT`
 
-本项目默认遵循“非侵入式”原则：自动配置默认关闭，按需开启。
+## 模块说明
 
-## 版本
+| 模块 | 用途 | Spring 依赖 |
+| --- | --- | --- |
+| `persipa-cloud-common-core` | REST 响应模型、分页响应模型、枚举工具 | 无 |
+| `persipa-cloud-common-spring-boot-starter` | Jackson、MyBatis-Plus、Springdoc、应用版本信息自动配置 | 有 |
 
-当前项目版本：`4.2.0-SNAPSHOT`
+模块依赖关系为：
+
+```text
+persipa-cloud-common-spring-boot-starter
+└── persipa-cloud-common-core
+```
+
+starter 会传递引入 core，Spring Boot 项目不需要重复声明 core。
+
+## 环境要求
+
+- JDK 17 或更高版本
+- 使用仓库自带的 Maven Wrapper 构建
+
+```shell
+./mvnw clean verify
+```
+
+如果本机没有配置默认 JDK，请先设置 `JAVA_HOME`。
 
 ## 依赖引入
+
+### 非 Spring 项目
+
+只引入 core，不会传递 Spring、MyBatis-Plus、Springdoc 或 Jackson：
 
 ```xml
 <dependency>
     <groupId>site.persipa</groupId>
-    <artifactId>persipa-cloud-common</artifactId>
+    <artifactId>persipa-cloud-common-core</artifactId>
     <version>4.2.0-SNAPSHOT</version>
 </dependency>
 ```
 
-使用 MyBatis-Plus 分页能力的服务还需显式引入分页解析模块：
+core 提供：
+
+- 统一响应模型 `Result<T>`
+- 与持久层实现解耦的分页响应模型 `PageResponse<T>`
+- 枚举查找工具 `EnumFindHelper`
+
+### Spring Boot 项目
+
+引入 starter 即可同时使用自动配置和 core 中的公共类型：
 
 ```xml
+<dependency>
+    <groupId>site.persipa</groupId>
+    <artifactId>persipa-cloud-common-spring-boot-starter</artifactId>
+    <version>4.2.0-SNAPSHOT</version>
+</dependency>
+```
+
+MyBatis-Plus 和 Springdoc 是可选集成。业务项目使用相应能力时，需要显式添加对应依赖。
+
+MyBatis-Plus 示例：
+
+```xml
+<dependency>
+    <groupId>com.baomidou</groupId>
+    <artifactId>mybatis-plus-spring-boot4-starter</artifactId>
+</dependency>
 <dependency>
     <groupId>com.baomidou</groupId>
     <artifactId>mybatis-plus-jsqlparser</artifactId>
 </dependency>
 ```
 
-## 自动配置开关
+Springdoc 示例：
+
+```xml
+<dependency>
+    <groupId>org.springdoc</groupId>
+    <artifactId>springdoc-openapi-starter-common</artifactId>
+</dependency>
+```
+
+## 从旧坐标迁移
+
+原坐标：
+
+```xml
+<artifactId>persipa-cloud-common</artifactId>
+```
+
+重构后该坐标是 Maven 聚合父 POM，不再提供 Java 类。下游项目需要根据用途迁移：
+
+- 非 Spring 项目：改为 `persipa-cloud-common-core`
+- Spring Boot 项目：改为 `persipa-cloud-common-spring-boot-starter`
+
+现有 Java 包名和配置键没有变化，一般不需要修改 import 或应用配置。
+
+## 自动配置
+
+自动配置默认关闭，业务项目按需开启：
 
 ```yaml
 persipa:
@@ -66,42 +136,58 @@ persipa:
       print: true
 ```
 
-说明：
+### Jackson
 
-- `persipa.cloud.json.jackson.java-time-module=true`  
-  启用后统一 `LocalDateTime` 格式为 `yyyy-MM-dd HH:mm:ss`。
-- `persipa.cloud.orm.mybatis.auto-fill-time=true`  
-  启用后自动填充实体字段 `createTime`、`updateTime`。
-- `persipa.cloud.orm.mybatis.pagination.enabled=true`
-  启用后自动注册 MyBatis-Plus 分页拦截器。`db-type` 留空时自动识别数据库类型，
-  `overflow` 控制页码溢出行为，`max-limit` 限制单页最大记录数。业务方声明自己的
-  `MybatisPlusInterceptor` Bean 后，公共库自动退让。
-- `persipa.cloud.openapi.enabled=true`  
-  启用后注册默认 `OpenAPI` Bean；业务方可自定义同类型 Bean 覆盖。
-- `persipa.cloud.app-version.print=true`  
-  启用后在应用 Ready 后向控制台打印应用名称与版本。业务应用需要生成 Spring Boot
-  `build-info.properties` 才能打印真实名称和版本；缺失时打印通用启动完成信息。
+`persipa.cloud.json.jackson.java-time-module=true` 时注册 `JavaTimeModule`，统一
+`LocalDateTime` 的序列化和反序列化格式为 `yyyy-MM-dd HH:mm:ss`。业务项目已声明
+`JavaTimeModule` Bean 时，公共配置自动退让。
 
-## REST 响应模型
+### MyBatis-Plus
 
-`Result<T>` 是不可变 `record`，用于 REST 响应：
+- `persipa.cloud.orm.mybatis.auto-fill-time=true`：自动填充实体的 `createTime` 和
+  `updateTime` 字段。
+- `persipa.cloud.orm.mybatis.pagination.enabled=true`：注册分页拦截器。
+- `db-type` 为空时由 MyBatis-Plus 自动识别数据库类型。
+- `overflow` 控制页码溢出行为。
+- `max-limit` 限制单页最大记录数。
 
-- `code`: 状态码（当前成功为 `0`，失败为 `-1`）
-- `message`: 文本信息（保证非空）
-- `payload`: 业务数据
-- `timestamp`: `Instant` 时间戳（保证非空）
+业务项目已声明 `MetaObjectHandler` 或 `MybatisPlusInterceptor` Bean 时，对应公共配置
+自动退让。
 
-使用示例：
+### Springdoc OpenAPI
+
+`persipa.cloud.openapi.enabled=true` 时注册默认 `OpenAPI` Bean，并应用标题、描述、
+版本、服务条款和 server 列表。业务项目已声明 `OpenAPI` Bean 时自动退让。
+
+### 应用版本信息
+
+`persipa.cloud.app-version.print=true` 时，在 Spring 应用 Ready 后打印应用名称和版本。
+业务应用需要生成 Spring Boot `build-info.properties` 才能输出真实名称和版本；缺失时
+仅打印通用启动完成信息。
+
+## 公共响应模型
+
+`Result<T>` 是不可变 `record`：
 
 ```java
 return Result.success(data);
 return Result.fail("参数错误");
 ```
 
-## 分页查询与响应
+字段说明：
 
-数据访问层可以正常使用 MyBatis-Plus 的 `Page` 执行分页查询，但 REST API 返回
-`PageResponse<T>`，避免向调用方暴露 MyBatis-Plus 的排序、SQL 优化等内部字段：
+- `code`：成功为 `0`，失败为 `-1`
+- `message`：文本信息，保证非空
+- `payload`：业务数据
+- `timestamp`：`Instant` 时间戳，保证非空
+
+`PageResponse<T>` 同样是不依赖持久层框架的不可变 `record`，字段包括 `list`、
+`total`、`pageSize`、`pageNumber` 和 `totalPages`。传入空的 `list` 时会规范化为空数组。
+
+## MyBatis-Plus 分页转换
+
+`MybatisPageResponseConverter` 位于 starter，可将 MyBatis-Plus 的 `IPage` 转换为
+core 中的 `PageResponse`：
 
 ```java
 Page<User> page = userMapper.selectPage(new Page<>(pageNumber, pageSize), queryWrapper);
@@ -110,7 +196,7 @@ PageResponse<User> response = MybatisPageResponseConverter.from(page);
 return Result.success(response);
 ```
 
-需要将实体转换为 DTO 时，可以在分页转换时同步映射记录：
+转换为 DTO：
 
 ```java
 PageResponse<UserResponse> response = MybatisPageResponseConverter.from(
@@ -119,14 +205,5 @@ PageResponse<UserResponse> response = MybatisPageResponseConverter.from(
 );
 ```
 
-`MybatisPageResponseConverter` 依赖 MyBatis-Plus，但 `PageResponse` 本身不包含任何
-MyBatis-Plus 类型，因此 REST API 的响应契约仍与持久层实现解耦。
-
-`PageResponse<T>` 的字段为 `list`、`total`、`pageSize`、`pageNumber` 和
-`totalPages`；传入空的 `list` 时会统一输出空数组。
-
-## 兼容与覆盖策略
-
-- Jackson、MyBatis、OpenAPI 配置都使用 `@ConditionalOnMissingBean`，支持下游按需覆盖。
-- MyBatis、MyBatis 分页解析器与 OpenAPI 相关依赖在 `pom.xml` 中为 `optional`，
-  避免无关服务被强耦合。
+该转换器的 API 直接使用 MyBatis-Plus 类型，因此使用它的项目必须显式引入
+MyBatis-Plus。
