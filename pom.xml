@@ -15,7 +15,7 @@
     <name>persipa-cloud-common</name>
 
     <properties>
-        <revision>4.2.0-SNAPSHOT</revision>
+        <revision>4.2.0</revision>
     </properties>
 
     <modules>

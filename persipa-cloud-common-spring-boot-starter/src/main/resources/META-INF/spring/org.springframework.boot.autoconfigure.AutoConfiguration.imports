@@ -2,3 +2,4 @@ site.persipa.common.jackson.JacksonConfiguration
 site.persipa.common.mybatis.CustomMybatisPlusAutoConfiguration
 site.persipa.common.openapi.SpringDocAutoConfiguration
 site.persipa.common.version.AppVersionPrintAutoConfiguration
+site.persipa.common.version.AppVersionEndpointAutoConfiguration

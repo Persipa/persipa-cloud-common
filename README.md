@@ -3,7 +3,7 @@
 Persipa 项目使用的公共 Java 类库与 Spring Boot 自动配置集合。项目采用 Maven
 多模块结构，让非 Spring 项目只引入轻量公共模型，Spring Boot 项目按需启用自动配置。
 
-当前版本：`4.2.0-SNAPSHOT`
+当前版本：`4.2.0`
 
 ## 模块说明
 
@@ -42,7 +42,7 @@ starter 会传递引入 core，Spring Boot 项目不需要重复声明 core。
 <dependency>
     <groupId>site.persipa</groupId>
     <artifactId>persipa-cloud-common-core</artifactId>
-    <version>4.2.0-SNAPSHOT</version>
+    <version>${CurrentVersion}</version>
 </dependency>
 ```
 
@@ -60,7 +60,7 @@ core 提供：
 <dependency>
     <groupId>site.persipa</groupId>
     <artifactId>persipa-cloud-common-spring-boot-starter</artifactId>
-    <version>4.2.0-SNAPSHOT</version>
+    <version>${CurrentVersion}</version>
 </dependency>
 ```
 
@@ -134,6 +134,9 @@ persipa:
           description: Staging
     app-version:
       print: true
+      endpoint:
+        enabled: true
+        path: /_version
 ```
 
 ### Jackson
@@ -164,6 +167,13 @@ persipa:
 `persipa.cloud.app-version.print=true` 时，在 Spring 应用 Ready 后打印应用名称和版本。
 业务应用需要生成 Spring Boot `build-info.properties` 才能输出真实名称和版本；缺失时
 仅打印通用启动完成信息。
+
+当业务应用为 Servlet Web 应用且
+`persipa.cloud.app-version.endpoint.enabled=true` 时，会注册 `GET /_version`
+（可通过 `persipa.cloud.app-version.endpoint.path` 修改）的版本接口，响应为
+`{"version":"1.2.3"}`。业务应用同样需要生成 Spring Boot
+`build-info.properties`；缺失构建版本时，该接口返回 `503 Service Unavailable`。
+访问控制由业务应用的安全配置或网关负责。
 
 ## 公共响应模型
 
