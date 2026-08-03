@@ -1,0 +1,4 @@
+interface:
+  display_name: "Persipa Cloud Common"
+  short_description: "在业务项目中接入、配置和排查 Persipa Cloud Common"
+  default_prompt: "使用 $use-persipa-cloud-common 帮助我在当前项目接入并配置 Persipa Cloud Common。"
