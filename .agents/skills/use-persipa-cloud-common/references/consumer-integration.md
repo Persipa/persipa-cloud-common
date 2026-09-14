@@ -10,7 +10,7 @@
 
 ## 模块与坐标
 
-当前版本为 `4.2.1`，运行环境要求 JDK 17 或更高版本。该版本新增 MyBatis-Plus 乐观锁的按需自动配置。始终以调用方的 Maven 最终解析版本为准；不要在代码、配置或排障命令中假定某个版本一定存在。
+当前版本为 `4.2.2`，运行环境要求 JDK 17 或更高版本。本版本完善 MyBatis-Plus 自动填充集成指南。始终以调用方的 Maven 最终解析版本为准；不要在代码、配置或排障命令中假定某个版本一定存在。
 
 ### 非 Spring 项目
 
@@ -63,6 +63,8 @@ persipa:
     orm:
       mybatis:
         auto-fill-time: true
+        create-time-field: createTime
+        update-time-field: updateTime
         optimistic-lock:
           enabled: true
         pagination:
@@ -72,12 +74,41 @@ persipa:
           max-limit: 500
 ```
 
-- `auto-fill-time=true` 自动填充 `createTime` 和 `updateTime`。
 - `pagination.enabled=true` 注册分页拦截器；`db-type` 留空时交给 MyBatis-Plus 自动识别。
 - `optimistic-lock.enabled=true` 注册乐观锁拦截器。实体版本字段必须使用 `@Version`，支持 `int`、`Integer`、`long`、`Long`、`Date`、`Timestamp` 和 `LocalDateTime`；整数版本会递增，新版本会回写实体。
 - 乐观锁更新返回 `false` 通常表示版本不匹配；业务方应重新读取数据后决定重试或向用户提示冲突。`update(entity, wrapper)` 的 wrapper 不可复用。
 - 同时启用乐观锁和分页时，公共配置按“乐观锁、分页”顺序组装同一个拦截器链，分页位于链尾。
 - 调用方已有 `MetaObjectHandler` 或 `MybatisPlusInterceptor` Bean 时，使用其自定义实现；后者需由调用方自行加入乐观锁和分页插件。
+
+#### 自动填充时间字段
+
+`auto-fill-time` 默认关闭。调用方显式引入适用的 MyBatis-Plus starter 后，设置
+`persipa.cloud.orm.mybatis.auto-fill-time=true`，starter 才会注册默认的
+`MetaObjectHandler`。该处理器以 `Instant.now()` 严格填充默认名为 `createTime`、`updateTime`
+的字段；可分别用 `create-time-field`、`update-time-field` 覆盖字段名。
+
+实体字段必须通过 `@TableField` 声明填充策略，且字段类型应为 `Instant`，例如：
+
+```java
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
+
+import java.time.Instant;
+
+public class AuditEntity {
+
+    @TableField(fill = FieldFill.INSERT)
+    private Instant createTime;
+
+    @TableField(fill = FieldFill.INSERT_UPDATE)
+    private Instant updateTime;
+}
+```
+
+插入时会尝试填充创建时间和更新时间，更新时只会尝试填充更新时间。严格填充不会覆盖实体中已有的非空值，也不会以 `null` 填充字段。调用方已声明 `MetaObjectHandler` Bean 时，starter 自动配置会退让；需要用户、租户等审计字段或其他类型时，应由调用方实现自定义处理器。
+
+更新操作必须传入实体才能触发自动填充：`update(entity, wrapper)` 中的 `entity` 不能为
+`null`；仅调用 `update(wrapper)` 不会触发填充，应改为传入实体或手动设置更新时间字段。
 
 ### Springdoc OpenAPI
 

@@ -13,7 +13,11 @@ description: 帮助业务项目接入、配置、使用和排查 Persipa Cloud C
 4. 仅在业务确实需要时启用 `persipa.cloud.*` 自动配置；保留业务项目已有 Bean 的优先级。
 5. 对 MyBatis-Plus 和 Springdoc，先显式引入调用方所需的可选依赖，再开启对应配置；使用
    乐观锁时还需引入 `mybatis-plus-extension`，并在实体版本字段上使用 `@Version`。
-6. 修改依赖、配置或 API 使用后，运行调用方项目已有的构建和测试命令。
+6. 处理 MyBatis-Plus 自动填充时，先确认实体字段带有正确的 `@TableField(fill = ...)`，再启用
+   `persipa.cloud.orm.mybatis.auto-fill-time=true`。默认处理器仅严格填充 `Instant` 类型的
+   `createTime` 和 `updateTime`；字段名可通过 `create-time-field`、`update-time-field` 调整。
+   调用方已有 `MetaObjectHandler` Bean 时自动配置退让，应保留并使用其自定义填充策略。
+7. 修改依赖、配置或 API 使用后，运行调用方项目已有的构建和测试命令。
 
 ## 参考资料
 
