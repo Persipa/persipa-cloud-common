@@ -3,7 +3,7 @@
 Persipa 项目使用的公共 Java 类库与 Spring Boot 自动配置集合。项目采用 Maven
 多模块结构，让非 Spring 项目只引入轻量公共模型，Spring Boot 项目按需启用自动配置。
 
-当前版本：`4.2.0`
+当前版本：`4.2.1`。本版本新增 MyBatis-Plus 乐观锁的按需自动配置。
 
 ## 模块说明
 
