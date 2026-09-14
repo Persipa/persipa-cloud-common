@@ -11,7 +11,8 @@ description: 帮助业务项目接入、配置、使用和排查 Persipa Cloud C
 2. 仅在非 Spring 项目中引入 `persipa-cloud-common-core`；在 Spring Boot 项目中引入 `persipa-cloud-common-spring-boot-starter`。不要将聚合父 POM `persipa-cloud-common` 当作 Java 类库依赖。
 3. 使用公共 API 时优先保持框架无关：用 `Result<T>` 封装 REST 返回值，用 `PageResponse<T>` 暴露分页结果。
 4. 仅在业务确实需要时启用 `persipa.cloud.*` 自动配置；保留业务项目已有 Bean 的优先级。
-5. 对 MyBatis-Plus 和 Springdoc，先显式引入调用方所需的可选依赖，再开启对应配置。
+5. 对 MyBatis-Plus 和 Springdoc，先显式引入调用方所需的可选依赖，再开启对应配置；使用
+   乐观锁时还需引入 `mybatis-plus-extension`，并在实体版本字段上使用 `@Version`。
 6. 修改依赖、配置或 API 使用后，运行调用方项目已有的构建和测试命令。
 
 ## 参考资料

@@ -2,6 +2,7 @@ package site.persipa.common.mybatis;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import org.apache.ibatis.reflection.MetaObject;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -45,12 +46,14 @@ public class CustomMybatisPlusAutoConfiguration {
     }
 
     /**
-     * MyBatis-Plus 分页插件自动配置。
+     * 仅启用分页时的 MyBatis-Plus 插件自动配置。
      */
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnClass(PaginationInnerInterceptor.class)
     @ConditionalOnProperty(prefix = "persipa.cloud.orm.mybatis.pagination", name = "enabled",
             havingValue = "true")
+    @ConditionalOnProperty(prefix = "persipa.cloud.orm.mybatis.optimistic-lock", name = "enabled",
+            havingValue = "false", matchIfMissing = true)
     static class PaginationConfiguration {
 
         /**
@@ -67,6 +70,54 @@ public class CustomMybatisPlusAutoConfiguration {
             paginationInterceptor.setMaxLimit(pagination.getMaxLimit());
 
             MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
+            interceptor.addInnerInterceptor(paginationInterceptor);
+            return interceptor;
+        }
+    }
+
+    /**
+     * 仅启用乐观锁时的 MyBatis-Plus 插件自动配置。
+     */
+    @Configuration(proxyBeanMethods = false)
+    @ConditionalOnClass(OptimisticLockerInnerInterceptor.class)
+    @ConditionalOnProperty(prefix = "persipa.cloud.orm.mybatis.optimistic-lock", name = "enabled",
+            havingValue = "true")
+    @ConditionalOnProperty(prefix = "persipa.cloud.orm.mybatis.pagination", name = "enabled",
+            havingValue = "false", matchIfMissing = true)
+    static class OptimisticLockConfiguration {
+
+        @Bean
+        @ConditionalOnMissingBean(MybatisPlusInterceptor.class)
+        MybatisPlusInterceptor mybatisPlusInterceptor() {
+            MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
+            interceptor.addInnerInterceptor(new OptimisticLockerInnerInterceptor());
+            return interceptor;
+        }
+    }
+
+    /**
+     * 同时启用乐观锁和分页时的 MyBatis-Plus 插件自动配置。
+     */
+    @Configuration(proxyBeanMethods = false)
+    @ConditionalOnClass({OptimisticLockerInnerInterceptor.class, PaginationInnerInterceptor.class})
+    @ConditionalOnProperty(prefix = "persipa.cloud.orm.mybatis.optimistic-lock", name = "enabled",
+            havingValue = "true")
+    @ConditionalOnProperty(prefix = "persipa.cloud.orm.mybatis.pagination", name = "enabled",
+            havingValue = "true")
+    static class OptimisticLockAndPaginationConfiguration {
+
+        @Bean
+        @ConditionalOnMissingBean(MybatisPlusInterceptor.class)
+        MybatisPlusInterceptor mybatisPlusInterceptor(MybatisProperties properties) {
+            MybatisProperties.Pagination pagination = properties.getPagination();
+            PaginationInnerInterceptor paginationInterceptor = pagination.getDbType() == null
+                    ? new PaginationInnerInterceptor()
+                    : new PaginationInnerInterceptor(pagination.getDbType());
+            paginationInterceptor.setOverflow(pagination.isOverflow());
+            paginationInterceptor.setMaxLimit(pagination.getMaxLimit());
+
+            MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
+            interceptor.addInnerInterceptor(new OptimisticLockerInnerInterceptor());
             interceptor.addInnerInterceptor(paginationInterceptor);
             return interceptor;
         }

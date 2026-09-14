@@ -26,6 +26,11 @@ public class MybatisProperties {
     private Pagination pagination = new Pagination();
 
     /**
+     * 乐观锁插件配置。
+     */
+    private OptimisticLock optimisticLock = new OptimisticLock();
+
+    /**
      * MyBatis-Plus 分页插件配置。
      */
     @Data
@@ -50,6 +55,18 @@ public class MybatisProperties {
          * 单页最大记录数，为空时不限制。
          */
         private Long maxLimit;
+    }
+
+    /**
+     * MyBatis-Plus 乐观锁插件配置。
+     */
+    @Data
+    public static class OptimisticLock {
+
+        /**
+         * 是否自动注册乐观锁插件。
+         */
+        private boolean enabled = false;
     }
 
 }

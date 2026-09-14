@@ -77,6 +77,10 @@ MyBatis-Plus 示例：
     <groupId>com.baomidou</groupId>
     <artifactId>mybatis-plus-jsqlparser</artifactId>
 </dependency>
+<dependency>
+    <groupId>com.baomidou</groupId>
+    <artifactId>mybatis-plus-extension</artifactId>
+</dependency>
 ```
 
 Springdoc 示例：
@@ -116,6 +120,8 @@ persipa:
     orm:
       mybatis:
         auto-fill-time: true
+        optimistic-lock:
+          enabled: true
         pagination:
           enabled: true
           db-type: mysql
@@ -150,12 +156,19 @@ persipa:
 - `persipa.cloud.orm.mybatis.auto-fill-time=true`：自动填充实体的 `createTime` 和
   `updateTime` 字段。
 - `persipa.cloud.orm.mybatis.pagination.enabled=true`：注册分页拦截器。
+- `persipa.cloud.orm.mybatis.optimistic-lock.enabled=true`：注册乐观锁拦截器。
 - `db-type` 为空时由 MyBatis-Plus 自动识别数据库类型。
 - `overflow` 控制页码溢出行为。
 - `max-limit` 限制单页最大记录数。
 
-业务项目已声明 `MetaObjectHandler` 或 `MybatisPlusInterceptor` Bean 时，对应公共配置
-自动退让。
+启用乐观锁后，在实体的版本字段添加 `@Version`。支持 `int`、`Integer`、`long`、`Long`、
+`Date`、`Timestamp` 和 `LocalDateTime`；整数版本每次更新递增，更新后的版本值会回写实体。
+更新返回 `false` 通常表示版本不匹配，应由业务方重新读取数据后决定重试或提示冲突。使用
+`update(entity, wrapper)` 时不要复用 wrapper。
+
+同时启用乐观锁和分页时，公共配置按“乐观锁、分页”顺序组装同一个拦截器链，分页始终位于链尾。
+业务项目已声明 `MetaObjectHandler` 或 `MybatisPlusInterceptor` Bean 时，对应公共配置自动退让；
+自定义 `MybatisPlusInterceptor` 时需要由业务方自行加入乐观锁和分页插件。
 
 ### Springdoc OpenAPI
 

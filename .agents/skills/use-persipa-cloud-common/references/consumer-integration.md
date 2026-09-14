@@ -55,7 +55,7 @@
 
 ### MyBatis-Plus
 
-MyBatis-Plus 是可选集成。启用前显式引入调用方适用的 MyBatis-Plus starter；使用分页时还显式引入 `mybatis-plus-jsqlparser`。
+MyBatis-Plus 是可选集成。启用前显式引入调用方适用的 MyBatis-Plus starter；使用分页时还显式引入 `mybatis-plus-jsqlparser`，使用乐观锁时还显式引入 `mybatis-plus-extension`。
 
 ```yaml
 persipa:
@@ -63,6 +63,8 @@ persipa:
     orm:
       mybatis:
         auto-fill-time: true
+        optimistic-lock:
+          enabled: true
         pagination:
           enabled: true
           db-type: mysql
@@ -72,7 +74,10 @@ persipa:
 
 - `auto-fill-time=true` 自动填充 `createTime` 和 `updateTime`。
 - `pagination.enabled=true` 注册分页拦截器；`db-type` 留空时交给 MyBatis-Plus 自动识别。
-- 调用方已有 `MetaObjectHandler` 或 `MybatisPlusInterceptor` Bean 时，使用其自定义实现。
+- `optimistic-lock.enabled=true` 注册乐观锁拦截器。实体版本字段必须使用 `@Version`，支持 `int`、`Integer`、`long`、`Long`、`Date`、`Timestamp` 和 `LocalDateTime`；整数版本会递增，新版本会回写实体。
+- 乐观锁更新返回 `false` 通常表示版本不匹配；业务方应重新读取数据后决定重试或向用户提示冲突。`update(entity, wrapper)` 的 wrapper 不可复用。
+- 同时启用乐观锁和分页时，公共配置按“乐观锁、分页”顺序组装同一个拦截器链，分页位于链尾。
+- 调用方已有 `MetaObjectHandler` 或 `MybatisPlusInterceptor` Bean 时，使用其自定义实现；后者需由调用方自行加入乐观锁和分页插件。
 
 ### Springdoc OpenAPI
 
@@ -112,7 +117,7 @@ persipa:
 | 现象 | 处理方式 |
 | --- | --- |
 | 找不到 `Result`、`PageResponse` 或其他 Java 类 | 将旧的 `persipa-cloud-common` 聚合坐标改为 `persipa-cloud-common-core` 或 `persipa-cloud-common-spring-boot-starter`。 |
-| starter 启动后没有 MyBatis-Plus 能力 | 显式添加匹配 Spring Boot 版本的 MyBatis-Plus starter；使用分页时同时添加 `mybatis-plus-jsqlparser`，然后启用所需配置。 |
+| starter 启动后没有 MyBatis-Plus 能力 | 显式添加匹配 Spring Boot 版本的 MyBatis-Plus starter；使用分页时同时添加 `mybatis-plus-jsqlparser`，使用乐观锁时同时添加 `mybatis-plus-extension`，然后启用所需配置。 |
 | OpenAPI 自动配置没有生效 | 显式添加 Springdoc 依赖并设置 `persipa.cloud.openapi.enabled=true`；检查是否已有自定义 `OpenAPI` Bean。 |
 | `/_version` 返回 503 | 生成 `build-info.properties`，确认 endpoint 已启用，并检查调用方最终解析的 starter 版本。 |
 | 自动配置未替换业务自定义实现 | 这是预期的退让行为。调整调用方自定义 Bean 或配置，而不是依赖公共自动配置覆盖它。 |

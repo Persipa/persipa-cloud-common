@@ -2,6 +2,7 @@ package site.persipa.common.mybatis;
 
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -21,7 +22,7 @@ class CustomMybatisPlusAutoConfigurationTests {
             .withConfiguration(AutoConfigurations.of(CustomMybatisPlusAutoConfiguration.class));
 
     @Test
-    void shouldNotRegisterPaginationInterceptorByDefault() {
+    void shouldNotRegisterInterceptorByDefault() {
         contextRunner.run(context -> assertThat(context).doesNotHaveBean(MybatisPlusInterceptor.class));
     }
 
@@ -30,6 +31,25 @@ class CustomMybatisPlusAutoConfigurationTests {
         contextRunner.withClassLoader(new FilteredClassLoader(PaginationInnerInterceptor.class))
                 .withPropertyValues("persipa.cloud.orm.mybatis.pagination.enabled=true")
                 .run(context -> assertThat(context).doesNotHaveBean(MybatisPlusInterceptor.class));
+    }
+
+    @Test
+    void shouldNotRegisterOptimisticLockInterceptorWhenModuleIsMissing() {
+        contextRunner.withClassLoader(new FilteredClassLoader(OptimisticLockerInnerInterceptor.class))
+                .withPropertyValues("persipa.cloud.orm.mybatis.optimistic-lock.enabled=true")
+                .run(context -> assertThat(context).doesNotHaveBean(MybatisPlusInterceptor.class));
+    }
+
+    @Test
+    void shouldRegisterOptimisticLockInterceptorWhenEnabled() {
+        contextRunner.withPropertyValues("persipa.cloud.orm.mybatis.optimistic-lock.enabled=true")
+                .run(context -> {
+                    assertThat(context).hasSingleBean(MybatisPlusInterceptor.class);
+                    assertThat(context.getBean(MybatisPlusInterceptor.class).getInterceptors())
+                            .hasSize(1)
+                            .first()
+                            .isInstanceOf(OptimisticLockerInnerInterceptor.class);
+                });
     }
 
     @Test
@@ -63,8 +83,26 @@ class CustomMybatisPlusAutoConfigurationTests {
     }
 
     @Test
+    void shouldRegisterOptimisticLockBeforePaginationWhenBothAreEnabled() {
+        contextRunner.withPropertyValues(
+                        "persipa.cloud.orm.mybatis.optimistic-lock.enabled=true",
+                        "persipa.cloud.orm.mybatis.pagination.enabled=true")
+                .run(context -> {
+                    assertThat(context).hasSingleBean(MybatisPlusInterceptor.class);
+                    MybatisPlusInterceptor interceptor = context.getBean(MybatisPlusInterceptor.class);
+                    assertThat(interceptor.getInterceptors()).hasSize(2);
+                    assertThat(interceptor.getInterceptors().get(0))
+                            .isInstanceOf(OptimisticLockerInnerInterceptor.class);
+                    assertThat(interceptor.getInterceptors().get(1))
+                            .isInstanceOf(PaginationInnerInterceptor.class);
+                });
+    }
+
+    @Test
     void shouldBackOffWhenCustomInterceptorExists() {
-        contextRunner.withPropertyValues("persipa.cloud.orm.mybatis.pagination.enabled=true")
+        contextRunner.withPropertyValues(
+                        "persipa.cloud.orm.mybatis.pagination.enabled=true",
+                        "persipa.cloud.orm.mybatis.optimistic-lock.enabled=true")
                 .withUserConfiguration(CustomInterceptorConfiguration.class)
                 .run(context -> {
                     assertThat(context).hasSingleBean(MybatisPlusInterceptor.class);
