@@ -3,7 +3,7 @@
 Persipa 项目使用的公共 Java 类库与 Spring Boot 自动配置集合。项目采用 Maven
 多模块结构，让非 Spring 项目只引入轻量公共模型，Spring Boot 项目按需启用自动配置。
 
-当前版本：`4.2.2`。本版本完善 MyBatis-Plus 自动填充集成指南。
+正式版本以 Git Tag 和 Maven 仓库为准；根 POM 默认保存当前 SNAPSHOT 开发版本。
 
 ## 模块说明
 
@@ -31,6 +31,18 @@ starter 会传递引入 core，Spring Boot 项目不需要重复声明 core。
 ```
 
 如果本机没有配置默认 JDK，请先设置 `JAVA_HOME`。
+
+## 版本与发布
+
+项目使用精简的主线与开发分支模型：
+
+- `main` 保存稳定主线，普通提交不发布制品。
+- `dev/x.y.z-SNAPSHOT` 用于对应版本的开发，提交后自动发布 Maven Snapshot。
+- `archive/*` 只保留历史版本，不触发流水线。
+- 在 `main` 当前 HEAD 创建 `x.y.z` 格式的 Git Tag 后，自动发布 Maven 正式版本。
+
+根 POM 使用 `${revision}` 作为项目版本。GitLab CI 从开发分支名或正式 Tag 取得实际构建版本，
+通过 `-Drevision` 注入 Maven，因此正式发布不需要单独提交版本号变更。
 
 ## 依赖引入
 

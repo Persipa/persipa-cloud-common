@@ -63,6 +63,16 @@ starter 用于 Spring Boot 自动配置：
 - 新增或修改的自动配置覆盖默认关闭、启用、缺少可选类和自定义 Bean 退让场景。
 - README 中的依赖坐标、配置示例与代码一致。
 
+## 版本与发布
+
+- `main` 是稳定主线，普通提交不发布制品。
+- 开发分支命名为 `dev/x.y.z-SNAPSHOT`，提交后由 GitLab CI 发布对应 Maven Snapshot。
+- 历史分支统一归档到 `archive/*`，不参与构建发布。
+- 正式版本使用 `x.y.z` 格式的 Git Tag，且 Tag 必须指向 `main` 当前 HEAD。
+- 根 POM 的 `revision` 保存当前 SNAPSHOT 开发版本；CI 根据开发分支名或正式 Tag 使用
+  `-Drevision` 注入实际发布版本。
+- 正式发布不创建仅修改版本号的提交。
+
 ## 编码约定
 
 - 保持现有 `site.persipa.common` 包结构，除非任务明确要求破坏性迁移。
