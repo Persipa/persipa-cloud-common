@@ -1,13 +1,15 @@
 ---
 name: use-persipa-cloud-common
-description: 帮助业务项目接入、配置、使用和排查 Persipa Cloud Common。处理选择 core 或 Spring Boot starter、配置 persipa.cloud.*（含 MVC CORS）、使用 Result 或 PageResponse、接入 MyBatis-Plus 或 Springdoc、排查应用版本接口、从旧聚合坐标迁移，或需要核验依赖版本实际行为时使用。
+description: 帮助业务项目按版本接入、配置、使用和排查 Persipa Cloud Common，查询版本历史与已实现功能。处理 core 或 Spring Boot starter 选型、persipa.cloud.* 配置、公共响应模型、MyBatis-Plus、Springdoc、MVC CORS、应用版本接口及旧坐标迁移。
 ---
 
 # Persipa Cloud Common 调用方集成
 
 ## 工作流
 
-1. 读取调用方项目的 Maven 依赖管理，确定最终解析的 Persipa Cloud Common 版本。
+1. 读取调用方项目的 Maven 依赖管理，确定最终解析的 Persipa Cloud Common 版本；对照
+   [版本历史](references/consumer-integration.md#版本历史)和
+   [已实现功能](references/consumer-integration.md#已实现功能)，确认所需能力存在于该版本。
 2. 仅在非 Spring 项目中引入 `persipa-cloud-common-core`；在 Spring Boot 项目中引入 `persipa-cloud-common-spring-boot-starter`。不要将聚合父 POM `persipa-cloud-common` 当作 Java 类库依赖。
 3. 使用公共 API 时优先保持框架无关：用 `Result<T>` 封装 REST 返回值，用 `PageResponse<T>` 暴露分页结果。
 4. 仅在业务确实需要时启用 `persipa.cloud.*` 自动配置；保留业务项目已有 Bean 的优先级。
@@ -26,7 +28,11 @@ description: 帮助业务项目接入、配置、使用和排查 Persipa Cloud C
 
 在做模块选择、写依赖或配置、处理常见冲突和迁移时，读取 [references/consumer-integration.md](references/consumer-integration.md)。
 
-该参考包含当前发布坐标、公共 API、自动配置、排障路径及 source JAR 核验方式。
+该参考包含模块坐标、版本历史、已实现功能、公共 API、自动配置、排障路径及 source JAR 核验方式。
+
+## 版本与功能查询
+
+用户询问某版本支持哪些能力时，读取参考资料中的版本历史与已实现功能，再按调用方实际解析版本回答。区分当前源码、开发快照和已发布制品；不要将 `4.3.0` 新增的 CORS 能力归入 `4.2.2`。
 
 ## 版本行为核验
 

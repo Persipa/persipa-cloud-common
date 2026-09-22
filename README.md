@@ -3,7 +3,8 @@
 Persipa 项目使用的公共 Java 类库与 Spring Boot 自动配置集合。项目采用 Maven
 多模块结构，让非 Spring 项目只引入轻量公共模型，Spring Boot 项目按需启用自动配置。
 
-正式版本以 Git Tag 和 Maven 仓库为准；根 POM 默认保存当前 SNAPSHOT 开发版本。
+根 POM 当前默认构建版本为 `4.3.0`。正式版本是否可供调用方使用，以 Git Tag 和
+Maven 仓库中的制品为准。
 
 ## 模块说明
 
@@ -41,8 +42,9 @@ starter 会传递引入 core，Spring Boot 项目不需要重复声明 core。
 - `archive/*` 只保留历史版本，不触发流水线。
 - 在 `main` 当前 HEAD 创建 `x.y.z` 格式的 Git Tag 后，自动发布 Maven 正式版本。
 
-根 POM 使用 `${revision}` 作为项目版本。GitLab CI 从开发分支名或正式 Tag 取得实际构建版本，
-通过 `-Drevision` 注入 Maven，因此正式发布不需要单独提交版本号变更。
+根 POM 使用 `${revision}` 作为项目版本，当前本地默认值为 `4.3.0`。GitLab CI 从开发分支名或
+正式 Tag 取得实际构建版本，通过 `-Drevision` 注入 Maven。正式发布仍以指向 `main` 当前 HEAD
+的 Tag 为准，不需要单独提交仅修改版本号的变更。
 
 ## 依赖引入
 

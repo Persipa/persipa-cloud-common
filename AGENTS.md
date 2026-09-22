@@ -80,7 +80,7 @@ starter 用于 Spring Boot 自动配置：
 - 开发分支命名为 `dev/x.y.z-SNAPSHOT`，提交后由 GitLab CI 发布对应 Maven Snapshot。
 - 历史分支统一归档到 `archive/*`，不参与构建发布。
 - 正式版本使用 `x.y.z` 格式的 Git Tag，且 Tag 必须指向 `main` 当前 HEAD。
-- 根 POM 的 `revision` 保存当前 SNAPSHOT 开发版本；CI 根据开发分支名或正式 Tag 使用
+- 根 POM 的 `revision` 保存当前本地默认构建版本；CI 根据开发分支名或正式 Tag 使用
   `-Drevision` 注入实际发布版本。
 - 正式发布不创建仅修改版本号的提交。
 
