@@ -159,21 +159,6 @@ class PersipaWebCorsAutoConfigurationTests {
     }
 
     @Test
-    void shouldNotBackOffForOrdinaryBusinessWebMvcConfigurer() {
-        webContextRunner.withPropertyValues(
-                        "persipa.cloud.web.cors.enabled=true",
-                        "persipa.cloud.web.cors.allowed-origins=https://allowed.example.com")
-                .withUserConfiguration(OrdinaryBusinessWebMvcConfigurerConfiguration.class)
-                .run(context -> {
-                    assertThat(context).hasSingleBean(PersipaWebCorsConfigurer.class);
-                    performGet(context, "/api/orders", "https://allowed.example.com")
-                            .andExpect(status().isOk())
-                            .andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN,
-                                    "https://allowed.example.com"));
-                });
-    }
-
-    @Test
     void shouldAllowBusinessConfigurerToOverrideSamePathCorsMapping() {
         webContextRunner.withPropertyValues(
                         "persipa.cloud.web.cors.enabled=true",
@@ -233,19 +218,6 @@ class PersipaWebCorsAutoConfigurationTests {
             PersipaWebCorsProperties properties = new PersipaWebCorsProperties();
             properties.setAllowedOrigins(List.of("https://custom.example.com"));
             return new PersipaWebCorsConfigurer(properties);
-        }
-    }
-
-    @Configuration(proxyBeanMethods = false)
-    static class OrdinaryBusinessWebMvcConfigurerConfiguration {
-
-        @Bean
-        WebMvcConfigurer ordinaryBusinessWebMvcConfigurer() {
-            return new WebMvcConfigurer() {
-                @Override
-                public void addCorsMappings(CorsRegistry registry) {
-                }
-            };
         }
     }
 

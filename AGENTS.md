@@ -15,7 +15,7 @@
 
 ## 工作入口
 
-- 在本仓库开发或审查库代码时使用 `develop-persipa-cloud-common`；业务项目接入本库时使用
+- 在本仓库开发、审查库代码或维护项目文档时使用 `develop-persipa-cloud-common`；业务项目接入本库时使用
   `use-persipa-cloud-common`。
 - 代码变更先由 `persipa-cloud-common-testing` 判断测试必要性和最小范围；只有确实需要 Spring Boot 4
   测试设施时才组合使用 `spring-boot-4-testing-code`。

@@ -1,6 +1,6 @@
 ---
 name: develop-persipa-cloud-common
-description: 在 Persipa Cloud Common 仓库内编写、修改和审查 core 公共 API、Spring Boot starter 自动配置及可选集成代码。面向库的维护者；业务项目接入和使用该库时使用 use-persipa-cloud-common。
+description: 在 Persipa Cloud Common 仓库内开发、审查和维护 core 公共 API、Spring Boot starter 自动配置、可选集成及项目文档。面向库的维护者；业务项目接入和使用该库时使用 use-persipa-cloud-common。
 ---
 
 # Persipa Cloud Common 项目开发
@@ -17,6 +17,10 @@ description: 在 Persipa Cloud Common 仓库内编写、修改和审查 core 公
 ## 自动配置
 
 新增或修改自动配置时检查默认关闭、显式启用、`@ConditionalOnClass`、`@ConditionalOnProperty` 和 `@ConditionalOnMissingBean` 的适用性。新增自动配置类时同步维护 `AutoConfiguration.imports`。检查配置属性、README 示例与实际行为一致，避免覆盖调用方已有 Bean。
+
+## 调用方文档同步
+
+维护 README 或其他调用方文档时，根据本次变更检查 `use-persipa-cloud-common/SKILL.md` 及其 `references/consumer-integration.md`。如果依赖坐标、版本适用范围、公共 API、配置项、默认行为、可选依赖或迁移方式影响调用方，更新对应指导，保持与代码和 README 一致。区分开发分支能力与已发布版本；只调整受影响的内容。纯内部实现或测试调整不改变调用方行为时，无需改写调用方技能。
 
 ## 测试和验证
 
