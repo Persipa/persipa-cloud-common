@@ -1,0 +1,4 @@
+interface:
+  display_name: "开发 Persipa Cloud Common"
+  short_description: "维护 core API、starter 自动配置与模块边界"
+  default_prompt: "使用 $develop-persipa-cloud-common 在本仓库完成代码变更，并按项目测试策略验证。"
