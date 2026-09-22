@@ -13,6 +13,16 @@
 
 依赖方向只能是 starter 到 core，禁止 core 反向依赖 starter。
 
+## 工作入口
+
+- 在本仓库开发、审查库代码或维护项目文档时使用 `develop-persipa-cloud-common`；业务项目接入本库时使用
+  `use-persipa-cloud-common`。
+- 代码变更先由 `persipa-cloud-common-testing` 判断测试必要性和最小范围；只有确实需要 Spring Boot 4
+  测试设施时才组合使用 `spring-boot-4-testing-code`。
+- 编写提交文案或执行已明确授权的提交时，优先使用 `.codex/agents/git-commit-writer.toml` 中的
+  `git_commit_writer`；该 agent 使用 `git-commit-message`，涉及 Issue 时再组合
+  `youtrack-vcs-commit-rules`。配置的模型只作用于该 agent。
+
 ## 模块边界
 
 ### core
@@ -60,7 +70,8 @@ starter 用于 Spring Boot 自动配置：
 - 根工程 Reactor 构建成功。
 - 变更模块的测试通过。
 - core 的 compile/runtime 依赖树不包含 Spring 或其他框架依赖。
-- 新增或修改的自动配置覆盖默认关闭、启用、缺少可选类和自定义 Bean 退让场景。
+- 新增或修改的自动配置按实际适用性验证默认关闭、启用、缺少可选类和自定义 Bean 退让场景；
+  现有测试已经保护的行为不重复补测试。
 - README 中的依赖坐标、配置示例与代码一致。
 
 ## 版本与发布
@@ -76,7 +87,7 @@ starter 用于 Spring Boot 自动配置：
 ## 编码约定
 
 - 保持现有 `site.persipa.common` 包结构，除非任务明确要求破坏性迁移。
-- 公共 API 变更需要补充测试和迁移说明。
+- 公共 API 变更需要有测试保护其契约，并补充迁移说明；现有测试已覆盖时不重复新增。
 - 不在 core 中为框架便利性污染通用模型。
 - 优先使用不可变类型；集合入参为空时保持现有规范化行为。
 - 配置属性沿用 `persipa.cloud.*` 前缀，未经明确设计不要重命名。

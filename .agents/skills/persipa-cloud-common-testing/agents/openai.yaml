@@ -1,0 +1,4 @@
+interface:
+  display_name: "Persipa Cloud Common 测试"
+  short_description: "按公共依赖包的契约风险选择最小测试"
+  default_prompt: "使用 $persipa-cloud-common-testing 判断本次变更需要哪些测试，并完成必要的最小验证。"

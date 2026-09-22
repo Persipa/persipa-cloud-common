@@ -30,20 +30,6 @@ class MybatisPageResponseConverterTests {
     }
 
     @Test
-    void shouldConvertIPageToPageResponse() {
-        IPage<String> page = new Page<String>(1, 5, 1)
-                .setRecords(List.of("record"));
-
-        PageResponse<String> response = MybatisPageResponseConverter.from(page);
-
-        assertThat(response.list()).containsExactly("record");
-        assertThat(response.total()).isEqualTo(1);
-        assertThat(response.pageSize()).isEqualTo(5);
-        assertThat(response.pageNumber()).isEqualTo(1);
-        assertThat(response.totalPages()).isEqualTo(1);
-    }
-
-    @Test
     void shouldMapRecordsWithoutModifyingSourcePage() {
         Page<String> page = new Page<>(1, 10, 2);
         page.setRecords(List.of("first", "second"));

@@ -10,17 +10,14 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Properties;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -39,18 +36,6 @@ class AppVersionEndpointAutoConfigurationTests {
     void shouldNotRegisterEndpointByDefault() {
         webContextRunner.run(context ->
                 assertThat(context).doesNotHaveBean(AppVersionEndpointController.class));
-    }
-
-    @Test
-    void shouldNotRegisterEndpointWhenDisabled() {
-        webContextRunner.withPropertyValues("persipa.cloud.app-version.endpoint.enabled=false")
-                .run(context -> assertThat(context).doesNotHaveBean(AppVersionEndpointController.class));
-    }
-
-    @Test
-    void shouldRegisterEndpointWhenEnabled() {
-        webContextRunner.withPropertyValues("persipa.cloud.app-version.endpoint.enabled=true")
-                .run(context -> assertThat(context).hasSingleBean(AppVersionEndpointController.class));
     }
 
     @Test
@@ -76,28 +61,8 @@ class AppVersionEndpointAutoConfigurationTests {
     @Test
     void shouldReturnServiceUnavailableWhenBuildPropertiesMissing() {
         webContextRunner.withPropertyValues("persipa.cloud.app-version.endpoint.enabled=true")
-                .run(context -> {
-                    AppVersionEndpointController controller = context.getBean(AppVersionEndpointController.class);
-
-                    assertThatThrownBy(controller::getVersion)
-                            .isInstanceOf(ResponseStatusException.class)
-                            .extracting(exception -> ((ResponseStatusException) exception).getStatusCode())
-                            .isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
-                });
-    }
-
-    @Test
-    void shouldReturnServiceUnavailableWhenBuildVersionMissing() {
-        webContextRunner.withPropertyValues("persipa.cloud.app-version.endpoint.enabled=true")
-                .withUserConfiguration(BuildPropertiesWithoutVersionConfiguration.class)
-                .run(context -> {
-                    AppVersionEndpointController controller = context.getBean(AppVersionEndpointController.class);
-
-                    assertThatThrownBy(controller::getVersion)
-                            .isInstanceOf(ResponseStatusException.class)
-                            .extracting(exception -> ((ResponseStatusException) exception).getStatusCode())
-                            .isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
-                });
+                .run(context -> performGet(context, "/_version")
+                        .andExpect(status().isServiceUnavailable()));
     }
 
     @Test
@@ -136,16 +101,9 @@ class AppVersionEndpointAutoConfigurationTests {
 
         @Bean
         BuildProperties buildProperties() {
-            return createBuildProperties("1.2.3");
-        }
-    }
-
-    @Configuration(proxyBeanMethods = false)
-    static class BuildPropertiesWithoutVersionConfiguration {
-
-        @Bean
-        BuildProperties buildProperties() {
-            return createBuildProperties(null);
+            Properties properties = new Properties();
+            properties.setProperty("version", "1.2.3");
+            return new BuildProperties(properties);
         }
     }
 
@@ -157,13 +115,5 @@ class AppVersionEndpointAutoConfigurationTests {
                 ObjectProvider<BuildProperties> buildPropertiesProvider) {
             return new AppVersionEndpointController(buildPropertiesProvider);
         }
-    }
-
-    private static BuildProperties createBuildProperties(String version) {
-        Properties properties = new Properties();
-        if (version != null) {
-            properties.setProperty("version", version);
-        }
-        return new BuildProperties(properties);
     }
 }

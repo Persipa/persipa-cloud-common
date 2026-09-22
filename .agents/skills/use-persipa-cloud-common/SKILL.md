@@ -1,6 +1,6 @@
 ---
 name: use-persipa-cloud-common
-description: 帮助业务项目接入、配置、使用和排查 Persipa Cloud Common。处理选择 core 或 Spring Boot starter、配置 persipa.cloud.*、使用 Result 或 PageResponse、接入 MyBatis-Plus 或 Springdoc、排查应用版本接口、从旧聚合坐标迁移，或需要核验依赖版本实际行为时使用。
+description: 帮助业务项目接入、配置、使用和排查 Persipa Cloud Common。处理选择 core 或 Spring Boot starter、配置 persipa.cloud.*（含 MVC CORS）、使用 Result 或 PageResponse、接入 MyBatis-Plus 或 Springdoc、排查应用版本接口、从旧聚合坐标迁移，或需要核验依赖版本实际行为时使用。
 ---
 
 # Persipa Cloud Common 调用方集成
@@ -17,7 +17,10 @@ description: 帮助业务项目接入、配置、使用和排查 Persipa Cloud C
    `persipa.cloud.orm.mybatis.auto-fill-time=true`。默认处理器仅严格填充 `Instant` 类型的
    `createTime` 和 `updateTime`；字段名可通过 `create-time-field`、`update-time-field` 调整。
    调用方已有 `MetaObjectHandler` Bean 时自动配置退让，应保留并使用其自定义填充策略。
-7. 修改依赖、配置或 API 使用后，运行调用方项目已有的构建和测试命令。
+7. 业务方需要跨域访问时，先确认实际依赖版本包含 MVC CORS 能力，再按
+   [调用方参考](references/consumer-integration.md#spring-mvc-cors) 配置可信来源并显式启用；
+   已由业务配置、Spring Security 或网关处理 CORS 时，先确认配置归属，避免重复规则。
+8. 修改依赖、配置或 API 使用后，运行调用方项目已有的构建和测试命令。
 
 ## 参考资料
 

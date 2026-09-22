@@ -10,7 +10,7 @@
 
 ## 模块与坐标
 
-当前版本为 `4.2.2`，运行环境要求 JDK 17 或更高版本。本版本完善 MyBatis-Plus 自动填充集成指南。始终以调用方的 Maven 最终解析版本为准；不要在代码、配置或排障命令中假定某个版本一定存在。
+运行环境要求 JDK 17 或更高版本。始终以调用方的 Maven 最终解析版本为准；不要仅根据本仓库开发分支判断某项能力已发布。CORS 自动配置是在 `4.3.0-SNAPSHOT` 开发分支新增的，`4.2.2` 不包含该能力；以下 CORS 配置只适用于包含它的版本。
 
 ### 非 Spring 项目
 
@@ -47,7 +47,7 @@
 
 ## Spring Boot 自动配置
 
-所有公共自动配置默认关闭。仅为调用方需要的能力设置对应 `persipa.cloud.*` 配置。业务项目已有同类 Bean 时，公共自动配置应退让，不要为了覆盖默认行为移除业务 Bean。
+所有公共自动配置默认关闭。仅为调用方需要的能力设置对应 `persipa.cloud.*` 配置。具体退让条件以各能力的对应 Bean 类型为准；例如普通业务 `WebMvcConfigurer` 不会阻止 CORS 自动配置加载。不要为了覆盖默认行为移除业务 Bean。
 
 ### Jackson 时间类型
 
@@ -126,6 +126,38 @@ persipa:
 
 需要时再补充 `terms-of-service` 和 `servers`。调用方已有 `OpenAPI` Bean 时，使用该 Bean。
 
+### Spring MVC CORS
+
+仅在业务方需要浏览器跨域访问、且实际解析的 starter 版本包含此能力时启用。
+该配置只作用于 Servlet Spring MVC 应用，默认关闭；`spring-webmvc` 是 starter 的
+optional 依赖，调用方需使用 Spring MVC。最小配置示例：
+
+```yaml
+persipa:
+  cloud:
+    web:
+      cors:
+        enabled: true
+        path-pattern: /api/**
+        allowed-origins:
+          - https://admin.example.com
+```
+
+启用时必须提供至少一个有效的 `allowed-origins` 或 `allowed-origin-patterns`，
+否则应用启动失败。不要直接复制示例域名，应填写实际可信来源。`path-pattern`
+默认 `/**`，建议缩小到需要跨域访问的路径。按需设置 `allowed-methods`、
+`allowed-headers`、`exposed-headers`、`allow-credentials` 与 `max-age`
+（例如 `1h`）。默认允许 `GET`、`HEAD`、`POST`、`PUT`、`PATCH`、`DELETE`、
+`OPTIONS` 方法和任意请求头，不允许携带凭证。`allow-credentials=true` 时，
+`allowed-origins` 不能包含 `"*"`；应优先使用明确的可信域名。
+
+其他业务 `WebMvcConfigurer` Bean 不会使该自动配置退让。若业务应用已有相同路径的
+全局 CORS 规则，应只保留一个配置归属；同路径规则不是逐字段合并。
+业务方可以用自定义 `PersipaWebCorsConfigurer` Bean 替代默认实现，或关闭此能力
+并自行配置。使用 Spring Security 时，还需在业务安全链启用
+`http.cors(Customizer.withDefaults())`；starter 不会修改 `SecurityFilterChain`。
+若网关已统一处理 CORS，也应避免在应用内重复启用。
+
 ### 应用版本信息
 
 ```yaml
@@ -150,6 +182,7 @@ persipa:
 | 找不到 `Result`、`PageResponse` 或其他 Java 类 | 将旧的 `persipa-cloud-common` 聚合坐标改为 `persipa-cloud-common-core` 或 `persipa-cloud-common-spring-boot-starter`。 |
 | starter 启动后没有 MyBatis-Plus 能力 | 显式添加匹配 Spring Boot 版本的 MyBatis-Plus starter；使用分页时同时添加 `mybatis-plus-jsqlparser`，使用乐观锁时同时添加 `mybatis-plus-extension`，然后启用所需配置。 |
 | OpenAPI 自动配置没有生效 | 显式添加 Springdoc 依赖并设置 `persipa.cloud.openapi.enabled=true`；检查是否已有自定义 `OpenAPI` Bean。 |
+| CORS 配置未生效或预检请求被拒绝 | 确认实际 starter 版本包含该能力、应用使用 Servlet MVC、已设置 `persipa.cloud.web.cors.enabled=true` 和可信来源；若使用 Spring Security，还需检查安全链的 CORS 配置。 |
 | `/_version` 返回 503 | 生成 `build-info.properties`，确认 endpoint 已启用，并检查调用方最终解析的 starter 版本。 |
 | 自动配置未替换业务自定义实现 | 这是预期的退让行为。调整调用方自定义 Bean 或配置，而不是依赖公共自动配置覆盖它。 |
 

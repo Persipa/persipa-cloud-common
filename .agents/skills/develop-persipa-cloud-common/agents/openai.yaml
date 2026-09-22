@@ -1,0 +1,4 @@
+interface:
+  display_name: "开发 Persipa Cloud Common"
+  short_description: "维护库代码、模块边界与调用方文档"
+  default_prompt: "使用 $develop-persipa-cloud-common 完成本仓库的代码或文档变更，并验证受影响的契约。"

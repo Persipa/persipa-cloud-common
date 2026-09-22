@@ -10,7 +10,7 @@ Persipa 项目使用的公共 Java 类库与 Spring Boot 自动配置集合。�
 | 模块 | 用途 | Spring 依赖 |
 | --- | --- | --- |
 | `persipa-cloud-common-core` | REST 响应模型、分页响应模型、枚举工具 | 无 |
-| `persipa-cloud-common-spring-boot-starter` | Jackson、MyBatis-Plus、Springdoc、应用版本信息自动配置 | 有 |
+| `persipa-cloud-common-spring-boot-starter` | Jackson、MyBatis-Plus、Springdoc、MVC CORS、应用版本信息自动配置 | 有 |
 
 模块依赖关系为：
 
@@ -150,6 +150,24 @@ persipa:
           description: Production
         - url: https://staging-api.example.com
           description: Staging
+    web:
+      cors:
+        enabled: true
+        path-pattern: /api/**
+        allowed-origins:
+          - https://admin.example.com
+        allowed-methods:
+          - GET
+          - HEAD
+          - POST
+          - PUT
+          - PATCH
+          - DELETE
+          - OPTIONS
+        allowed-headers:
+          - "*"
+        allow-credentials: false
+        max-age: 1h
     app-version:
       print: true
       endpoint:
@@ -186,6 +204,25 @@ persipa:
 
 `persipa.cloud.openapi.enabled=true` 时注册默认 `OpenAPI` Bean，并应用标题、描述、
 版本、服务条款和 server 列表。业务项目已声明 `OpenAPI` Bean 时自动退让。
+
+### Spring MVC CORS
+
+`persipa.cloud.web.cors.enabled=true` 时，为 Servlet MVC 应用添加一组全局 CORS
+映射；默认关闭，不提供预设的可信来源。启用时必须通过 `allowed-origins` 或
+`allowed-origin-patterns` 配置至少一个有效来源，否则应用启动失败。`path-pattern`
+默认为 `/**`；建议业务应用按需收窄到 `/api/**` 等路径。
+
+可配置 `allowed-methods`、`allowed-headers`、`exposed-headers`、
+`allow-credentials` 和 `max-age`。`max-age` 使用时长格式，例如 `1h`。
+`allow-credentials=true` 时不能将 `allowed-origins` 设为 `"*"`；应使用明确的可信域名。
+若业务应用已有相同路径的全局 CORS 映射，需要避免重复配置；MVC 对相同路径的
+映射不会逐字段合并。业务应用声明普通 `WebMvcConfigurer` 不会阻止本配置加载，
+但可提供专用的 CORS 配置实现来替换默认实现。
+
+此能力只配置 Spring MVC，不修改 `SecurityFilterChain`。使用 Spring Security
+时，业务应用仍需在安全链中启用 `http.cors(Customizer.withDefaults())`，
+使预检请求在认证前按 MVC 的 CORS 规则处理。若业务应用或网关已经自行处理
+CORS，应保持此自动配置关闭，避免重复或冲突的响应头。
 
 ### 应用版本信息
 
